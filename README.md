@@ -142,21 +142,3 @@ See [`docs/ADDITIONAL_CAMPAIGNS.md`](docs/ADDITIONAL_CAMPAIGNS.md) for
 scope, commands, outputs, interpretation limits, and watcher post-processing
 resume instructions.
 
-## Release completeness note
-
-This release was consolidated from the available source and result archives.
-All blockchain, watcher, authenticated-state, Flower, SMT, network, and TLA+
-launchers are present. The aggregate outputs of the separate dependency-DAG
-exhaustive checker are retained and integrity-checked, but its original Python
-generator was not present in the supplied source snapshot. They are therefore
-identified as retained output rather than silently represented as regenerated.
-The property-specific feature-ablation checker is executable under
-`formal/feature_ablation_check.py`.
-
-Run the source-only release validation with:
-
-```bash
-./scripts/check_repository.sh
-python3 tools/verify_reference_results.py
-./formal/run_auxiliary_checks.sh
-```
