@@ -1,0 +1,53 @@
+{
+  "clientId": 0,
+  "samples": 512,
+  "loss": 2.2659220099449158,
+  "accuracy": 0.220703125,
+  "artifactBytes": 102243,
+  "artifactSha256": "f40022eedaa0043c17ee15f0928da46c45e10b92bfd4166e10d81e9c08dc6b9d",
+  "fixedPointValues": 25450,
+  "scale": 1000000,
+  "header": {
+    "format": "ContestFL-fixed-point-update-v1",
+    "scale": 1000000,
+    "integerDtype": "int32-le",
+    "tensorOrder": "state_dict-insertion-order",
+    "values": 25450,
+    "tensors": [
+      {
+        "name": "network.1.weight",
+        "shape": [
+          32,
+          784
+        ],
+        "offset": 0,
+        "length": 25088
+      },
+      {
+        "name": "network.1.bias",
+        "shape": [
+          32
+        ],
+        "offset": 25088,
+        "length": 32
+      },
+      {
+        "name": "network.3.weight",
+        "shape": [
+          10,
+          32
+        ],
+        "offset": 25120,
+        "length": 320
+      },
+      {
+        "name": "network.3.bias",
+        "shape": [
+          10
+        ],
+        "offset": 25440,
+        "length": 10
+      }
+    ]
+  }
+}

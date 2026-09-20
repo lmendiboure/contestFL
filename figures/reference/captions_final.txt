@@ -1,0 +1,10 @@
+Suggested captions
+
+Off-chain sparse-Merkle latency:
+Median wall-clock cost of the dependency-free sparse-Merkle reference implementation; whiskers show the p95 over 30 retained runs. Tree construction, proof generation, and a leaf update followed by root recomputation remain below 12.4 ms at 500 clients, while proof verification remains below 0.03 ms median. The implementation recomputes populated levels and is therefore a conservative engineering reference rather than an optimized incremental-tree result.
+
+Flower REVISED gas:
+Transaction-level gas breakdown for the end-to-end Flower/MNIST applicability run. ContestFL first publishes a deliberately incorrect aggregate checkpoint, accepts an aggregate challenge, records the REVISED verdict, installs the corrected replay checkpoint, and finalizes only that replacement. The complete path consumes 790,759 gas over nine transactions.
+
+Flower REVISED timeline:
+Cumulative on-chain gas across the blocks of the Flower/MNIST aggregate-revision run. The incorrect checkpoint is challenged in block 35, revised in block 36, replaced in block 37, and the corrected checkpoint is finalized in block 40.

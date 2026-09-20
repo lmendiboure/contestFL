@@ -1,0 +1,91 @@
+profiles:
+  stable:
+    validators: [4]
+    clients: [10, 50, 100]
+    rounds: 5
+    warmup: 1
+    scenarios:
+      - logging_only
+      - nominal
+      - bad_admission
+      - bad_omission
+      - bad_injection
+      - bad_aggregate
+      - resolver_fallback
+      - correction_laundering
+      - concurrent_moot
+      - challenge_flooding
+      - resolver_timeout_abort
+      - artifact_unavailable_abort
+  quick:
+    validators: [4]
+    clients: [10, 25]
+    rounds: 2
+    warmup: 1
+    scenarios:
+      - logging_only
+      - nominal
+      - bad_admission
+      - bad_omission
+      - bad_injection
+      - bad_aggregate
+      - resolver_fallback
+      - correction_laundering
+      - concurrent_moot
+      - challenge_flooding
+      - resolver_timeout_abort
+      - artifact_unavailable_abort
+  core:
+    validators: [4, 7]
+    clients: [10, 25, 50, 100]
+    rounds: 10
+    warmup: 2
+    scenarios:
+      - logging_only
+      - nominal
+      - bad_admission
+      - bad_omission
+      - bad_injection
+      - bad_aggregate
+      - resolver_fallback
+      - correction_laundering
+      - concurrent_moot
+      - challenge_flooding
+      - resolver_timeout_abort
+      - artifact_unavailable_abort
+  paper:
+    validators: [4, 7]
+    clients: [10, 25, 50, 100]
+    rounds: 10
+    warmup: 2
+    scenarios:
+      - logging_only
+      - nominal
+      - bad_admission
+      - bad_omission
+      - bad_injection
+      - bad_aggregate
+      - resolver_fallback
+      - correction_laundering
+      - concurrent_moot
+      - challenge_flooding
+      - resolver_timeout_abort
+      - artifact_unavailable_abort
+  exhaustive:
+    validators: [4, 7]
+    clients: [10, 25, 50, 100, 200]
+    rounds: 30
+    warmup: 3
+    scenarios:
+      - logging_only
+      - nominal
+      - bad_admission
+      - bad_omission
+      - bad_injection
+      - bad_aggregate
+      - resolver_fallback
+      - correction_laundering
+      - concurrent_moot
+      - challenge_flooding
+      - resolver_timeout_abort
+      - artifact_unavailable_abort

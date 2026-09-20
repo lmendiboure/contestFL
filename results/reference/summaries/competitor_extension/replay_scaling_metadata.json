@@ -1,0 +1,22 @@
+{
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.41",
+  "python": "3.12.13",
+  "numpy": "2.3.2",
+  "clients": [
+    10,
+    50,
+    100
+  ],
+  "updateBytes": [
+    4096,
+    262144,
+    1048576,
+    10485760
+  ],
+  "rounds": 15,
+  "largeRounds": 8,
+  "hugeRounds": 3,
+  "warmup": 1,
+  "method": "One update is generated at a time. Generation is reported separately. Verification hashes every update, accumulates a canonical int64 sum, and hashes the checkpoint.",
+  "limitation": "The benchmark measures an in-memory replay kernel. It excludes artifact-store retrieval, decryption, deserialization, and wide-area transfer."
+}

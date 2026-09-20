@@ -1,0 +1,40 @@
+\begin{table}
+\caption{Fault-injection and correction results.}
+\label{tab:contestfl-faults}
+\begin{tabular}{rrlrrrrr}
+\toprule
+validators & clients & scenario & success\_rate & total\_ms\_median & gas\_median & retries\_median & blocks\_median \\
+\midrule
+4 & 10 & artifact\_unavailable\_abort & 1.00 & 5995.57 & 1506067.00 & 0.00 & 6.00 \\
+4 & 10 & bad\_admission & 1.00 & 9975.70 & 1652737.00 & 1.00 & 10.00 \\
+4 & 10 & bad\_aggregate & 1.00 & 9977.17 & 1629127.00 & 1.00 & 10.00 \\
+4 & 10 & bad\_injection & 1.00 & 10999.40 & 1814993.00 & 1.00 & 11.00 \\
+4 & 10 & bad\_omission & 1.00 & 10987.47 & 1817673.00 & 1.00 & 11.00 \\
+4 & 10 & challenge\_flooding & 1.00 & 15998.65 & 3972285.00 & 0.00 & 16.00 \\
+4 & 10 & concurrent\_moot & 1.00 & 9999.01 & 1863882.00 & 1.00 & 10.00 \\
+4 & 10 & correction\_laundering & 1.00 & 11017.50 & 1973209.00 & 1.00 & 11.00 \\
+4 & 10 & resolver\_fallback & 1.00 & 7966.43 & 1628865.00 & 0.00 & 8.00 \\
+4 & 10 & resolver\_timeout\_abort & 1.00 & 9011.08 & 1517963.00 & 0.00 & 9.00 \\
+4 & 50 & artifact\_unavailable\_abort & 1.00 & 5955.07 & 5697775.00 & 0.00 & 6.00 \\
+4 & 50 & bad\_admission & 1.00 & 9987.41 & 5844397.00 & 1.00 & 10.00 \\
+4 & 50 & bad\_aggregate & 1.00 & 10010.27 & 5820835.00 & 1.00 & 10.00 \\
+4 & 50 & bad\_injection & 1.00 & 11002.02 & 6006723.00 & 1.00 & 11.00 \\
+4 & 50 & bad\_omission & 1.00 & 11008.35 & 6009405.00 & 1.00 & 11.00 \\
+4 & 50 & challenge\_flooding & 1.00 & 16008.02 & 10827993.00 & 0.00 & 16.00 \\
+4 & 50 & concurrent\_moot & 1.00 & 9985.05 & 6055566.00 & 1.00 & 10.00 \\
+4 & 50 & correction\_laundering & 1.00 & 10973.88 & 6164905.00 & 1.00 & 11.00 \\
+4 & 50 & resolver\_fallback & 1.00 & 7910.62 & 5820561.00 & 0.00 & 8.00 \\
+4 & 50 & resolver\_timeout\_abort & 1.00 & 9040.69 & 5709671.00 & 0.00 & 9.00 \\
+4 & 100 & artifact\_unavailable\_abort & 1.00 & 7947.99 & 10969392.00 & 0.00 & 8.00 \\
+4 & 100 & bad\_admission & 1.00 & 12016.30 & 11116050.00 & 1.00 & 12.00 \\
+4 & 100 & bad\_aggregate & 1.00 & 11988.40 & 11092488.00 & 1.00 & 12.00 \\
+4 & 100 & bad\_injection & 1.00 & 12962.76 & 11278200.00 & 1.00 & 13.00 \\
+4 & 100 & bad\_omission & 1.00 & 12998.93 & 11281046.00 & 1.00 & 13.00 \\
+4 & 100 & challenge\_flooding & 1.00 & 17983.36 & 16099850.00 & 0.00 & 18.00 \\
+4 & 100 & concurrent\_moot & 1.00 & 11991.57 & 11327195.00 & 1.00 & 12.00 \\
+4 & 100 & correction\_laundering & 1.00 & 12948.75 & 11436534.00 & 1.00 & 13.00 \\
+4 & 100 & resolver\_fallback & 1.00 & 10000.92 & 11092214.00 & 0.00 & 10.00 \\
+4 & 100 & resolver\_timeout\_abort & 1.00 & 10997.84 & 10981336.00 & 0.00 & 11.00 \\
+\bottomrule
+\end{tabular}
+\end{table}

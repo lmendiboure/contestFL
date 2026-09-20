@@ -1,0 +1,10 @@
+clients,adapter,verification_ms_median,generation_ms_median,proof_bytes_median
+10,admission_receipt,8.273071,0.0272325,355.0
+10,deterministic_aggregate_replay,0.07536899999999999,0.0155905,259.0
+10,sparse_merkle_inclusion,0.055428000000000005,0.6983745,2052.0
+50,admission_receipt,6.9106115,0.0230655,355.0
+50,deterministic_aggregate_replay,0.12725350000000002,0.0136685,259.0
+50,sparse_merkle_inclusion,0.0517765,2.719272,2052.0
+100,admission_receipt,7.4024719999999995,0.0256525,355.0
+100,deterministic_aggregate_replay,0.2284005,0.0217,260.0
+100,sparse_merkle_inclusion,0.057078000000000004,5.939109,2052.0

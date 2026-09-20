@@ -1,0 +1,7 @@
+campaign_tag,validators,clients,scenario,batch_size,challenge_blocks,flood_count,flood_parallelism,network_rtt_ms,update_dim,runs,success_rate,total_ms_median,total_ms_p95,gas_median,gas_p95,tx_median,blocks_median,retries_median,challenges_median,calldata_median
+flood_n1_p20,4,100,challenge_flooding,50,10,1,20,0,1024,3,1.0,18024.072336,18026.5570812,11038130.0,11038140.8,107.0,18.0,0.0,1.0,17484.0
+flood_n1_p5,4,100,challenge_flooding,50,10,1,5,0,1024,3,1.0,17990.699819,17996.5633433,11038082.0,11038103.6,107.0,18.0,0.0,1.0,17484.0
+flood_n20_p20,4,100,challenge_flooding,50,10,20,20,0,1024,3,1.0,17949.426555,18003.1684224,16099838.0,16099848.8,145.0,18.0,0.0,20.0,24932.0
+flood_n20_p5,4,100,challenge_flooding,50,10,20,5,0,1024,3,1.0,17994.015123,18008.6285805,16099850.0,16099871.6,145.0,18.0,0.0,20.0,24932.0
+flood_n50_p20,4,100,challenge_flooding,50,10,50,20,0,1024,3,1.0,17986.675336,18009.4753483,24091994.0,24092026.4,205.0,18.0,0.0,50.0,36692.0
+flood_n50_p5,4,100,challenge_flooding,50,10,50,5,0,1024,3,1.0,18018.289406,18924.7324826,24091982.0,24091992.8,205.0,18.0,0.0,50.0,36692.0

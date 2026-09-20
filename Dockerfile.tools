@@ -1,0 +1,18 @@
+FROM python:3.12-slim
+ARG SOLC_VERSION=0.8.24
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    SOLC_VERSION=${SOLC_VERSION} \
+    SOLCX_BINARY_PATH=/opt/solcx
+WORKDIR /workspace
+COPY requirements.txt /tmp/requirements.txt
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends iproute2 iputils-ping ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && pip install --upgrade pip \
+ && pip install -r /tmp/requirements.txt \
+ && mkdir -p "$SOLCX_BINARY_PATH" \
+ && python -c "from solcx import install_solc; import os; install_solc(os.environ['SOLC_VERSION'], solcx_binary_path=os.environ['SOLCX_BINARY_PATH'])" \
+ && chmod -R a+rX "$SOLCX_BINARY_PATH"
+CMD ["python", "--version"]

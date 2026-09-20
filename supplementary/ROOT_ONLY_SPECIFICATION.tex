@@ -1,0 +1,37 @@
+% Drop-in specification paragraph for the ContestFL evaluation/design section.
+\paragraph{Authenticated-state submission.}
+The root-only implementation replaces per-client ledger mappings by four
+round-level commitments: a submission root $R_{\mathrm{sub}}$, a decision root
+$R_{\mathrm{dec}}$, an aggregate-input root $R_{\mathrm{agg}}$, and the claimed
+checkpoint hash $h(w_{r+1})$.  For client identifier $i$, the benchmark derives
+a 256-bit key $k_i=H(\mathtt{ContestFL:client}\parallel i)$ and assigns it to the
+first $d$ key bits.  A non-empty leaf is
+$H(\mathtt{ContestFL:leaf}\parallel k_i\parallel H(v_i))$, and an internal node
+is $H(\mathtt{ContestFL:node}\parallel L\parallel R)$; empty subtrees use
+height-specific domain-separated default hashes.  The reported experiment uses
+$d=32$ and rejects any two distinct keys that map to the same truncated path,
+so no collision can silently overwrite a leaf.  This depth is an evaluated
+benchmark configuration rather than a collision-free production choice; a
+production deployment should use the full key depth or a collision-resolving
+authenticated dictionary.
+
+A client-decision challenge reveals $(k_i,v_i)$ and the $d$ sibling hashes.  The
+contract reconstructs the path and compares the resulting root with
+$R_{\mathrm{dec}}$ inside the same state-changing transaction that records the
+challenge.  Consequently, the receipt's gas includes ABI decoding, every
+SHA-256 path step, duplicate checking, challenge storage, and event emission.
+An aggregate-checkpoint challenge needs no per-client witness because both
+$R_{\mathrm{agg}}$ and $h(w_{r+1})$ are already ledger-bound; its evidence hash
+commits to the deterministic replay record.  A successful client-decision
+revision may install successor decision and aggregate-input roots together with
+a successor checkpoint.  A successful aggregate-only revision is constrained
+to preserve both roots and may replace only the checkpoint.  Every uncertified
+successor reopens a bounded challenge window before finalization.
+
+This implementation is a storage-representation ablation, not a complete
+replacement for every materialized ContestFL transition.  In particular,
+receipt completeness, omission/injection disputes, challenge flooding,
+mooting, and fallback remain evaluated in the materialized prototype unless
+explicitly stated otherwise.  Root-only operation also shifts authenticated
+state and witness availability off chain: a challenger must obtain the relevant
+leaf and path before the challenge deadline.

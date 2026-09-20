@@ -1,0 +1,6 @@
+block_gas_limit,flood_count,runs,success_rate,honest_latency_ms_median,honest_latency_ms_p95,honest_block_offset_median,honest_block_offset_p95,honest_blocks_after_first_flood_median,flood_block_span_median,flood_gas_total_median,flood_in_honest_block_median,honest_block_utilization_median,flood_broadcast_ms_median
+5000000,0,5,1.0,947.101547,956.8061242,1.0,1.0,0.0,0.0,0.0,0.0,0.0065678,0.000422
+5000000,10,5,1.0,840.461924,937.7364571999999,1.0,1.0,0.0,1.0,1995798.0,10.0,0.4057274,32.368739
+5000000,25,5,1.0,832.129728,840.2932480000001,1.0,1.0,0.0,2.0,4989429.0,24.0,0.9645374,73.449041
+5000000,50,5,1.0,830.332338,840.6722692,1.0,1.0,0.0,3.0,9978894.0,24.0,0.9645422,146.293866
+5000000,100,5,1.0,726.775197,738.6278159999999,1.0,1.0,0.0,5.0,19957800.0,24.0,0.964535,259.689862

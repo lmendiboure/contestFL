@@ -1,0 +1,254 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,margin=22mm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,booktabs,array,enumitem}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newcommand{\FINAL}{\mathsf{FINALIZED}}
+\newcommand{\ABORT}{\mathsf{ABORTED}}
+\newcommand{\REVISED}{\mathsf{REVISED}}
+\newcommand{\UPHELD}{\mathsf{UPHELD}}
+\newcommand{\DISMISSED}{\mathsf{DISMISSED}}
+\newcommand{\MOOT}{\mathsf{MOOT}}
+\title{ContestFL Supplementary Material: Extended Proofs and Formal Model}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+
+\section{Scope and notation}
+For one federated-learning round, let $G_r=(V_r,E_r)$ be the finite acyclic
+version graph.  A version commits to its decision key, round identifier, policy,
+issuer, result, and the identifiers of every parent version it consumes.  The
+ledger state selects at most one current version per active key.  A version is
+\emph{terminal} if it is certified or if its renewed challenge window has
+closed without a successful challenge.  A checkpoint can be finalized only if
+all active keys have current terminal versions, all parent references are
+current, the set-containment constraints hold, and the aggregate version binds
+the current aggregate-input root and checkpoint.
+
+We separate three assumptions.  Ledger agreement and deterministic contract
+execution are denoted by T1.  Binding commitments and authenticated identities
+are denoted by T2.  Each registered public verifier or resolver policy has
+soundness error $\varepsilon_p$, denoted collectively by T3.  Coverage C1 means
+that every policy-invalid provisional version is challenged by an eligible
+honest party before its window closes.  Evidence availability C2 means that all
+evidence required for successful correction is available before its deadline.
+
+\section{Authenticated-state representation}
+\input{ROOT_ONLY_SPECIFICATION.tex}
+
+\section{Extended proofs}
+
+\begin{theorem}[Policy-relative revision soundness]
+For an admissible challenge against a policy-valid version, for which all
+issuer-obligated evidence is available before the deadline, the probability
+that the state machine accepts outcome $\REVISED$ is at most
+\[
+  \varepsilon_{\mathrm{bind}}+\varepsilon_{\mathrm{auth}}
+  +\sum_{p\in\mathcal P_C}\varepsilon_p,
+\]
+where $\mathcal P_C$ is the set of evidence policies invoked on the resolution
+path.
+\end{theorem}
+\begin{proof}
+Let $d$ be the challenged version.  Its identifier binds the round, decision
+key, policy identifier, issuer, result, and parent versions.  Challenge
+admission binds the reason and counter-evidence to $d$ and authenticates the
+challenger.  The state machine can produce $\REVISED$ only if a registered
+public verifier accepts the evidence or an authorized resolver certificate
+satisfies the registered threshold policy.  Missing challenger evidence maps
+to $\DISMISSED$; evidence unavailability attributable neither to the target nor
+to the challenger maps to fallback or abort, not to revision.
+
+Assume $d$ is policy-valid and nevertheless revised.  If all bindings and
+identities are correct, the accepted verifier/certificate statement is false.
+Thus at least one of the following bad events occurs: a commitment collision or
+second preimage; an identity, signature, or authorization forgery; an unsound
+public verification result; or acceptance of a false resolver certificate.
+T2 bounds the first two events and T3 bounds each invoked policy event.  Applying
+the union bound proves the claim.  No independence assumption is needed.
+\end{proof}
+
+\begin{lemma}[Supersession completeness]
+If $G_r$ is acyclic and every version commits to all parent identifiers it
+consumes, revising version $d$ and traversing outgoing dependency edges marks
+every current descendant of $d$ as superseded.  No marked descendant can remain
+in the canonical lineage.
+\end{lemma}
+\begin{proof}
+Order descendants by shortest-path distance from $d$.  Distance-zero contains
+$d$, which is marked by the revision transition.  Assume every descendant at
+distance at most $q$ is marked.  A descendant $x$ at distance $q+1$ has a parent
+$y$ at distance $q$ whose identifier is committed in $x$.  When $y$ is marked,
+the traversal visits every outgoing edge of $y$ and marks $x$.  Induction marks
+all descendants.  A marked version is not current.  Moreover, any version that
+still references a marked parent fails the current-parent predicate even if it
+was not yet selected as the current value of its own key.  A replacement can
+re-enter the lineage only by committing to the new current parents, so it is a
+new version rather than the superseded descendant.
+\end{proof}
+
+\begin{theorem}[Lineage-consistent finalization]
+Every finalized checkpoint depends only on current terminal versions.  It
+cannot depend on a revised target, a descendant superseded by that revision, or
+an uncertified replacement whose renewed challenge window remains open.
+Under T2--T3 and C1, every version in the finalized lineage is policy-valid
+except with the union of the invoked binding and policy failure probabilities.
+\end{theorem}
+\begin{proof}
+Consider the state immediately before finalization.  A revised target is marked
+superseded and, by supersession completeness, so are all descendants bound to
+its obsolete identifier.  Therefore none satisfies the current-version
+predicate.  A replacement without a validating public or quorum certificate is
+provisional until its new challenge window closes, so it fails terminality
+while that timer is open.  Finalization additionally checks that every active
+key has exactly one current terminal version, that every parent reference names
+a current version, that the admitted and included sets satisfy the protocol's
+nesting constraints, and that the aggregate version binds the current
+aggregate-input root and checkpoint.  Hence a finalized aggregate cannot have a
+revised, superseded, missing, or provisional ancestor.
+
+For policy validity, suppose a policy-invalid provisional version $x$ occurs in
+a finalized lineage.  By C1, an eligible honest party submits an admissible
+challenge before $x$ becomes terminal.  Outside the T2--T3 failure events, the
+registered resolution either revises $x$ or safely aborts the round.  Revision
+removes $x$ and its descendants from the current lineage; abort prevents
+finalization.  Both contradict the supposition.  A union bound over the finite
+set of bindings and policies invoked in the finalized lineage gives the stated
+failure probability.
+\end{proof}
+
+\begin{corollary}[Canonical checkpoint uniqueness]
+Under T1, two honest federation members cannot accept different finalized
+checkpoints for the same round.
+\end{corollary}
+\begin{proof}
+T1 gives every honest member the same totally ordered contract execution.  The
+finalization transition is deterministic and can execute at most once for the
+round.  Its precondition selects one current terminal aggregate version, whose
+committed checkpoint is therefore unique.  A second, distinct finalization
+would require either a different ordered state or nondeterministic execution,
+contradicting T1.
+\end{proof}
+
+\begin{lemma}[Bounded number of challenge windows]
+Let levels $1,\ldots,K$ follow a topological layering of $G_r$, let $b_\ell$ be
+the non-renewable republication budget shared by all keys at level $\ell$, and
+let $F$ be the number of reject-to-admit revisions that create a previously
+absent inclusion key.  Then
+\[
+  E\le 1+\sum_{\ell=1}^{K}b_\ell+F.
+\]
+\end{lemma}
+\begin{proof}
+Charge every window after the primary window to exactly one of two finite
+resources.  Republishing a key that has already existed consumes one token from
+the shared budget of its dependency level; no token can be consumed twice, so
+there are at most $\sum_\ell b_\ell$ such windows.  A reject-to-admit revision
+may create a previously absent inclusion key.  Charge the first publication of
+that key to the corresponding revision.  Since the revised admission is
+terminal and the submission receipt is fixed, the same missing key cannot be
+created for the first time twice, yielding at most $F$ additional windows.
+Certified replacements open no window.  Once a level budget is exhausted, only
+a certified fallback or abort is permitted.  Adding the primary window proves
+the bound.
+\end{proof}
+
+\begin{theorem}[Bounded termination after stabilization]
+Assume T1 and finite block-height deadlines.  Let every evidence adapter either
+return before its deadline or map timeout to dismissal, certified fallback, or
+abort.  Then every round reaches $\FINAL$ or $\ABORT$ in finite time after
+network stabilization.
+\end{theorem}
+\begin{proof}
+After stabilization, T1 ensures that every continuously submitted honest
+transaction is eventually ordered.  Each submission, decision, challenge,
+response, republication, renewed-challenge, fallback, and finalization phase has
+a finite block-height deadline.  Therefore every phase either executes its
+expected transition or takes its deterministic timeout transition in finite
+time.  The preceding lemma bounds the number of challenge windows by the finite
+quantity $E_{\max}$.  No unsupported challenge consumes a replacement token,
+and exhaustion cannot reopen a provisional window.  Consequently the recovery
+loop cannot execute indefinitely.  If a finalizable state is reached, the
+finalization transition terminates the round; otherwise a timeout, unavailable
+fallback, or budget exhaustion takes the round to $\ABORT$.
+\end{proof}
+
+\begin{theorem}[Bounded unsupported-challenge workload]
+Suppose each adversarial identity may open at most $\theta$ challenges per
+window, duplicate target/reason pairs are merged, there are $f$ adversarial
+identities, $n_e$ provisional decisions and $|\mathcal P|$ active reason codes
+in epoch $e$, and at most $p$ adapters execute concurrently.  If one unsupported
+challenge takes at most $\Delta_{\max}$ to resolve, its additional resolution
+delay is bounded by
+\[
+D_{\mathrm{adv}}^{(e)}\le
+\left\lceil\frac{\min(f\theta,n_e|\mathcal P|)}{p}\right\rceil
+\Delta_{\max}.
+\]
+\end{theorem}
+\begin{proof}
+The identity quota permits at most $f\theta$ submissions.  Duplicate merging
+also limits distinct target/reason pairs to $n_e|\mathcal P|$, so at most the
+minimum of these quantities reaches an adapter.  Scheduling that many jobs on
+$p$ parallel workers requires at most the displayed number of batches, each of
+duration at most $\Delta_{\max}$.  Unsupported challenges do not revise state,
+consume replacement budgets, or open renewed windows.  Summing over the bounded
+number of epochs gives a finite total adversarial delay.
+\end{proof}
+
+\section{Finite-state TLA+ model}
+The accompanying \texttt{ContestFL.tla} is a deliberately finite abstraction of
+the recovery lifecycle.  It models provisional and certified checkpoints,
+valid and false challenges, supersession, bounded retries, certified fallback,
+abort, and at-most-once finalization.  It does not model cryptography, concrete
+Merkle trees, the complete multi-key dependency DAG, wall-clock performance, or
+unbounded populations.  Those aspects are covered by the mathematical argument
+or measured implementation rather than inferred from bounded model checking.
+
+\begin{table}[h]
+\centering
+\caption{Mapping between protocol claims and checked TLA+ predicates.}
+\begin{tabular}{@{}p{0.42\linewidth}p{0.50\linewidth}@{}}
+\toprule
+Protocol claim & TLA+ predicate \\
+\midrule
+Retry budgets cannot be exceeded & \texttt{RetryBound} \\
+At most one checkpoint is finalized & \texttt{AtMostOneFinalization} \\
+A superseded checkpoint is never finalized & \texttt{NoSupersededFinalization} \\
+A provisional replacement is never finalized & \texttt{NoProvisionalFinalization} \\
+Finalization selects the current checkpoint & \texttt{CanonicalFinalization} \\
+With challenge coverage, finalized checkpoint is valid & \texttt{PolicyValidityUnderCoverage} \\
+Terminal states have no open challenge & \texttt{TerminalHasNoOpenChallenge} \\
+Every behavior eventually finalizes or aborts & \texttt{Termination} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The model is checked in two configurations.  \texttt{MC\_Coverage.cfg} enables
+coverage and checks policy-valid finalization.  \texttt{MC\_Structural.cfg}
+disables coverage and checks only structural safety and termination, allowing an
+invalid but unchallenged checkpoint to finalize.  The artifact runner records
+the exact TLC version, complete console output, generated and distinct state
+counts, graph depth, elapsed time, and both configuration files.  The generated
+\texttt{TLC\_RESULTS.tex} can be inserted below after executing the artifact.
+
+\IfFileExists{TLC_RESULTS.tex}{\input{TLC_RESULTS.tex}}{%
+\paragraph{TLC execution placeholder.}
+Run \texttt{formal/run\_tlc.sh}; then copy the generated
+\texttt{TLC\_RESULTS.tex} next to this document.  No state counts are asserted
+in this source before that exhaustive run succeeds.}
+
+\section{Reproducibility boundary}
+The proofs are parameterized; TLC checks the finite constants in the supplied
+configuration files.  Conversely, the implementation measurements establish
+cost and behavior for the evaluated workloads but cannot prove all executions.
+The paper should therefore report the two forms of evidence separately: theorem
+statements for parameterized safety/termination, bounded exhaustive state counts
+for the formal abstraction, and empirical gas/latency/replay measurements for
+the implementation.
+
+\end{document}

@@ -1,0 +1,74 @@
+{
+  "artifact": "ContestFL",
+  "releaseDateUtc": "2026-08-06T17:41:42.344800+00:00",
+  "fileCount": 245,
+  "referenceArchives": [
+    {
+      "name": "bounded_gas_contention.zip",
+      "sizeBytes": 76405,
+      "sha256": "28fd7c0261e3dbf26c0a06ae41cca8b67f9cb1dad198db87bd9613d8f2598b75"
+    },
+    {
+      "name": "competitor_extension.zip",
+      "sizeBytes": 3534675,
+      "sha256": "ba24968f1ccabf87db308df1b0060e9afc1bf39c90def1b11fa373147d6ebb7f"
+    },
+    {
+      "name": "dependency_dag_retained.zip",
+      "sizeBytes": 1529,
+      "sha256": "f70a2977997f6fc6e7f67b4b1aaa1654b303b8096f26f0cfd808f15dc3f32908"
+    },
+    {
+      "name": "feature_ablation_retained.zip",
+      "sizeBytes": 2754,
+      "sha256": "30fd2630aaaa78cdaec569e616dea882cc2b5abf33b969508e628ace4be8ea96"
+    },
+    {
+      "name": "flower_mnist.zip",
+      "sizeBytes": 179199,
+      "sha256": "4044b97f5c9238c142a70077fb17db7b39c113f81166a1e4c6479cb3a32e13cb"
+    },
+    {
+      "name": "network_smoke.zip",
+      "sizeBytes": 260758,
+      "sha256": "dc828301431d274fbdb2923e334407caf1f7c2f4d4091c40654c3023ede0630b"
+    },
+    {
+      "name": "root_depth_sensitivity.zip",
+      "sizeBytes": 90897,
+      "sha256": "018ac1baa8c833283ea1c53567b83f19c00b9fb98c557de8928a29490c5e49b6"
+    },
+    {
+      "name": "root_only_ablation.zip",
+      "sizeBytes": 387576,
+      "sha256": "a510b24793e4376a16c38bc7f22997663c3ddf3af548d7d1b6c97d9d3ea37cf3"
+    },
+    {
+      "name": "smt_offchain.zip",
+      "sizeBytes": 6614,
+      "sha256": "4230d68dad837d3a1f08776d917b9f8acce6464356c7fc922b40616fc18dfbf3"
+    },
+    {
+      "name": "stable_core.zip",
+      "sizeBytes": 2778110,
+      "sha256": "daaa739f3aafe8f2619dd31afbbf80c2f628ebe12770bd418d855dd7ad9c5b61"
+    },
+    {
+      "name": "targeted_extension.zip",
+      "sizeBytes": 2794465,
+      "sha256": "be94f2f7d9d51bd816050e87a0e9dae5eb215c700fb616376615f780a76f1ae8"
+    },
+    {
+      "name": "watcher_extension.zip",
+      "sizeBytes": 19106,
+      "sha256": "4d9ec896fbdb8a6a2bf1264137f0d16b4cd3a890787e17ba9cc1b86d4d26130f"
+    }
+  ],
+  "validation": {
+    "hostUnitTests": "31 passed, 9 skipped (optional Web3 dependencies unavailable)",
+    "referenceChecks": "36/36 passed",
+    "dockerRerun": false,
+    "tlcRerun": false
+  },
+  "knownLimitation": "The original generator source for the retained dependency-DAG aggregate table was not available; the retained outputs are integrity-checked and explicitly labeled."
+}

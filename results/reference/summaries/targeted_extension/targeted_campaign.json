@@ -1,0 +1,35 @@
+{
+  "runId": "20260805T134832Z_targeted_extension",
+  "validators": 4,
+  "cleanScaling": {
+    "clients": "10,25,50,75,100,150,200,300,500",
+    "designs": ["Audit-only", "Eager verification", "ContestFL"],
+    "rounds": 3,
+    "warmup": 1,
+    "batchSize": 50
+  },
+  "affectedDecisions": {
+    "values": "1 2 5 10 20 50",
+    "clients": 100,
+    "rounds": 3
+  },
+  "faultyReplacementChain": {
+    "values": "0 1 2 3 4 5",
+    "retryBudget": 5,
+    "clients": 100,
+    "rounds": 3
+  },
+  "challengeFlooding": {
+    "counts": "1 5 10 20 50 100",
+    "parallelisms": "5 20",
+    "clients": 100,
+    "rounds": 3
+  },
+  "replay": {
+    "clients": "10,50,100",
+    "updateBytes": "4096,65536,262144,1048576,4194304,10485760",
+    "roundsPerConfiguration": 10,
+    "isolatedProcesses": true
+  },
+  "networkEmulation": false
+}

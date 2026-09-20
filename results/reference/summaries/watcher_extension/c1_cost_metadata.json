@@ -1,0 +1,23 @@
+{
+  "cacheMode": "fadvise",
+  "blockPeriodMs": 1000.0,
+  "bandwidthMbps": [
+    100.0,
+    1000.0,
+    10000.0
+  ],
+  "watcherCounts": [
+    1,
+    2,
+    3
+  ],
+  "disputeRates": [
+    0.0,
+    0.01,
+    0.05,
+    0.1
+  ],
+  "projectionScope": "Ideal serialization combined with the retained local implementation under full-overlap and serial assumptions; excludes publication, store latency, queueing, transaction inclusion, and safety margin.",
+  "resolverScope": "Independent resolver term uses the isolated deterministic replay-kernel median; it is not a complete resolver service measurement.",
+  "deduplicationScope": "Expected federation work assumes duplicate challenge packages and resolver jobs are merged per disputed round."
+}

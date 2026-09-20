@@ -1,0 +1,158 @@
+{
+  "implementation": "bench.smt.SparseMerkleMap reference implementation",
+  "interpretation": "This implementation recomputes all populated levels when root or proof is requested; the measurements are conservative implementation costs, not an optimized incremental-tree claim.",
+  "depth": 32,
+  "clients": [
+    10,
+    100,
+    500
+  ],
+  "repetitions": 30,
+  "warmup": 5,
+  "summary": [
+    {
+      "clients": 10,
+      "depth": 32,
+      "operation": "build_and_root",
+      "runs": 30,
+      "wall_ms_median": 0.2892055,
+      "wall_ms_p95": 0.5841313999999999,
+      "cpu_ms_median": 0.288694,
+      "cpu_ms_p95": 0.5836200999999999,
+      "proof_bytes": 0,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 10,
+      "depth": 32,
+      "operation": "proof_generation",
+      "runs": 30,
+      "wall_ms_median": 0.2705195,
+      "wall_ms_p95": 0.32402745,
+      "cpu_ms_median": 0.269926,
+      "cpu_ms_p95": 0.32324614999999995,
+      "proof_bytes": 1057,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 10,
+      "depth": 32,
+      "operation": "proof_verification",
+      "runs": 30,
+      "wall_ms_median": 0.0232585,
+      "wall_ms_p95": 0.027352599999999998,
+      "cpu_ms_median": 0.022737,
+      "cpu_ms_p95": 0.02679145,
+      "proof_bytes": 1057,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 10,
+      "depth": 32,
+      "operation": "single_update_and_root",
+      "runs": 30,
+      "wall_ms_median": 0.268029,
+      "wall_ms_p95": 0.6872562499999996,
+      "cpu_ms_median": 0.26740949999999997,
+      "cpu_ms_p95": 0.6858143999999995,
+      "proof_bytes": 0,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 100,
+      "depth": 32,
+      "operation": "build_and_root",
+      "runs": 30,
+      "wall_ms_median": 2.612686,
+      "wall_ms_p95": 3.1290111499999993,
+      "cpu_ms_median": 2.5810035,
+      "cpu_ms_p95": 3.12849065,
+      "proof_bytes": 0,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 100,
+      "depth": 32,
+      "operation": "proof_generation",
+      "runs": 30,
+      "wall_ms_median": 2.621293,
+      "wall_ms_p95": 3.2089564500000005,
+      "cpu_ms_median": 2.6185915,
+      "cpu_ms_p95": 3.20833275,
+      "proof_bytes": 1057,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 100,
+      "depth": 32,
+      "operation": "proof_verification",
+      "runs": 30,
+      "wall_ms_median": 0.023743,
+      "wall_ms_p95": 0.028252549999999994,
+      "cpu_ms_median": 0.023231,
+      "cpu_ms_p95": 0.027662299999999997,
+      "proof_bytes": 1057,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 100,
+      "depth": 32,
+      "operation": "single_update_and_root",
+      "runs": 30,
+      "wall_ms_median": 2.5232194999999997,
+      "wall_ms_p95": 2.97622895,
+      "cpu_ms_median": 2.521663,
+      "cpu_ms_p95": 2.97460425,
+      "proof_bytes": 0,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 500,
+      "depth": 32,
+      "operation": "build_and_root",
+      "runs": 30,
+      "wall_ms_median": 12.333636,
+      "wall_ms_p95": 14.015044449999998,
+      "cpu_ms_median": 12.286342000000001,
+      "cpu_ms_p95": 14.003277149999999,
+      "proof_bytes": 0,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 500,
+      "depth": 32,
+      "operation": "proof_generation",
+      "runs": 30,
+      "wall_ms_median": 11.725222500000001,
+      "wall_ms_p95": 14.018041149999998,
+      "cpu_ms_median": 11.717620499999999,
+      "cpu_ms_p95": 13.970459099999996,
+      "proof_bytes": 1057,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 500,
+      "depth": 32,
+      "operation": "proof_verification",
+      "runs": 30,
+      "wall_ms_median": 0.027962,
+      "wall_ms_p95": 0.048421899999999934,
+      "cpu_ms_median": 0.027366,
+      "cpu_ms_p95": 0.047455299999999936,
+      "proof_bytes": 1057,
+      "success_rate": 1.0
+    },
+    {
+      "clients": 500,
+      "depth": 32,
+      "operation": "single_update_and_root",
+      "runs": 30,
+      "wall_ms_median": 11.825314500000001,
+      "wall_ms_p95": 13.08250745,
+      "cpu_ms_median": 11.8117255,
+      "cpu_ms_p95": 13.0096801,
+      "proof_bytes": 0,
+      "success_rate": 1.0
+    }
+  ]
+}

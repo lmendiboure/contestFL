@@ -1,0 +1,128 @@
+{
+  "timestampUtc": "2026-08-05T23:52:29Z",
+  "host": "bcc599451232",
+  "flowerVersion": "1.32.1",
+  "torchVersion": "2.8.0+cpu",
+  "dataset": "MNIST train split",
+  "model": "784-32-10 MLP",
+  "clients": 2,
+  "samplesPerClient": 512,
+  "localEpochs": 1,
+  "fixedPointScale": 1000000,
+  "valuesPerUpdate": 25450,
+  "artifactBytesPerClient": [
+    102243,
+    102243
+  ],
+  "artifactHashes": [
+    "f40022eedaa0043c17ee15f0928da46c45e10b92bfd4166e10d81e9c08dc6b9d",
+    "fc399864225bfaa265a62d297798af4c0eef9a200bcef479cbc80db915f1aef2"
+  ],
+  "checkpoint": "c601b9d228c1f2f1e2e7a64eef521410e3a50bf4ec8c557f02ddcd3f259c8e16",
+  "replay": {
+    "verdict": "UPHELD",
+    "validEvidence": true,
+    "verificationMs": 0.186159,
+    "artifactBytes": 203600
+  },
+  "flowerAggregateMaxAbsErrorAfterFixedPointReconstruction": 4.970483183860952e-07,
+  "chain": {
+    "roundId": 1785973939611004242,
+    "txCount": 9,
+    "gasTotal": 790759,
+    "calldataBytes": 1412,
+    "blockSpan": 10,
+    "faultyCheckpoint": "2c36840b23e2deecb3843b08a89f67bcac815703a16bf37ce2dc6198ed233d08",
+    "correctedCheckpoint": "c601b9d228c1f2f1e2e7a64eef521410e3a50bf4ec8c557f02ddcd3f259c8e16",
+    "finalCheckpoint": "c601b9d228c1f2f1e2e7a64eef521410e3a50bf4ec8c557f02ddcd3f259c8e16",
+    "checkpointMatches": true,
+    "submissionRoot": "cd2fd50d749ae44e35b28ae2d887c80b72f34e322cf53983bbc9f03a05be1be3",
+    "aggregateInputRoot": "813af0b2215a3fa28e878ca9ae4469c7d5710cc5f876ea20a158da73acd3e364",
+    "challengeId": 1,
+    "challengeOutcome": "REVISED",
+    "revisionEvidence": {
+      "adapter": "deterministic_aggregate_replay",
+      "verdict": "REVISED",
+      "validEvidence": true,
+      "verificationMs": 0.204188,
+      "proofBytes": 258,
+      "artifactBytes": 203600,
+      "detail": "selected=2; claimed=2c36840b23e2deecb3843b08a89f67bcac815703a16bf37ce2dc6198ed233d08; replayed=c601b9d228c1f2f1e2e7a64eef521410e3a50bf4ec8c557f02ddcd3f259c8e16"
+    },
+    "transactions": [
+      {
+        "phase": "open_round",
+        "gasUsed": 70569,
+        "calldataBytes": 164,
+        "blockNumber": 31,
+        "status": 1,
+        "txHash": "e27824c8b5b492688a666929204abc4153d54c16cb9dd256741b0015dbf83359"
+      },
+      {
+        "phase": "submit_artifacts",
+        "gasUsed": 54476,
+        "calldataBytes": 100,
+        "blockNumber": 32,
+        "status": 1,
+        "txHash": "e88e03bf115fb03e0fae9da85c24a63cf6271aa67040370c8d5a182b164ff318"
+      },
+      {
+        "phase": "submit_artifacts",
+        "gasUsed": 54500,
+        "calldataBytes": 100,
+        "blockNumber": 32,
+        "status": 1,
+        "txHash": "aac0132c993af848bb179cac4e057562e38b370ff3947ee582d06513dfc77ba3"
+      },
+      {
+        "phase": "publish_decisions",
+        "gasUsed": 132469,
+        "calldataBytes": 292,
+        "blockNumber": 33,
+        "status": 1,
+        "txHash": "19738c9d62d5bcb60d76a85bfa95f0ee89898432ac0902d4d17a209c0103377c"
+      },
+      {
+        "phase": "publish_faulty_state",
+        "gasUsed": 125076,
+        "calldataBytes": 164,
+        "blockNumber": 34,
+        "status": 1,
+        "txHash": "19f7c7a7c5d5b93113b1c9cbe0c52c0266091ba4b98a579f21bcc5d55a07c880"
+      },
+      {
+        "phase": "open_aggregate_challenge",
+        "gasUsed": 199593,
+        "calldataBytes": 196,
+        "blockNumber": 35,
+        "status": 1,
+        "txHash": "637b749ab41c177b69c201acff3e7f6e60d160f9620d962cf2733a56549a4a74"
+      },
+      {
+        "phase": "resolve_revised",
+        "gasUsed": 69404,
+        "calldataBytes": 196,
+        "blockNumber": 36,
+        "status": 1,
+        "txHash": "603b3d8d6a4eec9a9a0e4aa26585aa1917bb30ecad6536c5b3b7f15ac64dafed"
+      },
+      {
+        "phase": "publish_corrected_replacement",
+        "gasUsed": 51821,
+        "calldataBytes": 164,
+        "blockNumber": 37,
+        "status": 1,
+        "txHash": "c9a3d23305603d8472d41eaaa46b2f4f1f936b60cb0639e21218a46e9b3e8c57"
+      },
+      {
+        "phase": "finalize",
+        "gasUsed": 32851,
+        "calldataBytes": 36,
+        "blockNumber": 40,
+        "status": 1,
+        "txHash": "7c3db54fcfcb69090ca9141cc53510ee41b00a77a7bdc663154be7d2d58b617a"
+      }
+    ]
+  },
+  "success": true
+}

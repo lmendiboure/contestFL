@@ -1,0 +1,134 @@
+[
+  {
+    "retry_budget": 0,
+    "coverage": false,
+    "reachable_states": 40,
+    "transitions": 32,
+    "finalized_states": 8,
+    "aborted_states": 0,
+    "invalid_finalized_states": 7,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 0,
+    "coverage": true,
+    "reachable_states": 28,
+    "transitions": 31,
+    "finalized_states": 4,
+    "aborted_states": 5,
+    "invalid_finalized_states": 0,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 1,
+    "coverage": false,
+    "reachable_states": 40,
+    "transitions": 32,
+    "finalized_states": 8,
+    "aborted_states": 0,
+    "invalid_finalized_states": 7,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 1,
+    "coverage": true,
+    "reachable_states": 144,
+    "transitions": 154,
+    "finalized_states": 27,
+    "aborted_states": 15,
+    "invalid_finalized_states": 0,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 2,
+    "coverage": false,
+    "reachable_states": 40,
+    "transitions": 32,
+    "finalized_states": 8,
+    "aborted_states": 0,
+    "invalid_finalized_states": 7,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 2,
+    "coverage": true,
+    "reachable_states": 514,
+    "transitions": 540,
+    "finalized_states": 113,
+    "aborted_states": 33,
+    "invalid_finalized_states": 0,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 3,
+    "coverage": false,
+    "reachable_states": 40,
+    "transitions": 32,
+    "finalized_states": 8,
+    "aborted_states": 0,
+    "invalid_finalized_states": 7,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 3,
+    "coverage": true,
+    "reachable_states": 1308,
+    "transitions": 1358,
+    "finalized_states": 311,
+    "aborted_states": 59,
+    "invalid_finalized_states": 0,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 4,
+    "coverage": false,
+    "reachable_states": 40,
+    "transitions": 32,
+    "finalized_states": 8,
+    "aborted_states": 0,
+    "invalid_finalized_states": 7,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 4,
+    "coverage": true,
+    "reachable_states": 2694,
+    "transitions": 2776,
+    "finalized_states": 669,
+    "aborted_states": 93,
+    "invalid_finalized_states": 0,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 5,
+    "coverage": false,
+    "reachable_states": 40,
+    "transitions": 32,
+    "finalized_states": 8,
+    "aborted_states": 0,
+    "invalid_finalized_states": 7,
+    "nonterminal_cycles": 0,
+    "passed": true
+  },
+  {
+    "retry_budget": 5,
+    "coverage": true,
+    "reachable_states": 4840,
+    "transitions": 4962,
+    "finalized_states": 1235,
+    "aborted_states": 135,
+    "invalid_finalized_states": 0,
+    "nonterminal_cycles": 0,
+    "passed": true
+  }
+]

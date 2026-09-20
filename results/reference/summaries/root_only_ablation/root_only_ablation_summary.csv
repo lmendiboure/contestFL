@@ -1,0 +1,13 @@
+design,workload,clients,runs,success_rate,gas_median,calldata_median,tx_median,blocks_median,latency_ms_median
+materialized,bad_admission,10,5,1.0,1652725.0,2724.0,17.0,11.0,10990.290578
+materialized,bad_admission,100,5,1.0,11116062.0,17648.0,108.0,13.0,12992.095065
+materialized,bad_admission,500,5,1.0,53288842.0,84560.0,516.0,29.0,29071.260714
+materialized,clean,10,5,1.0,1308333.0,2168.0,14.0,8.0,7977.020172
+materialized,clean,100,5,1.0,10771694.0,17092.0,105.0,10.0,9996.781132
+materialized,clean,500,5,1.0,52944390.0,84004.0,513.0,26.0,25921.809205
+root_only,bad_admission,10,5,1.0,561481.0,1812.0,5.0,8.0,7988.114518
+root_only,bad_admission,100,5,1.0,561493.0,1812.0,5.0,8.0,8007.39504
+root_only,bad_admission,500,5,1.0,561493.0,1812.0,5.0,8.0,8007.828786
+root_only,clean,10,5,1.0,204116.0,364.0,3.0,6.0,6032.98838
+root_only,clean,100,5,1.0,204128.0,364.0,3.0,6.0,5968.907868
+root_only,clean,500,5,1.0,204140.0,364.0,3.0,6.0,5970.766738

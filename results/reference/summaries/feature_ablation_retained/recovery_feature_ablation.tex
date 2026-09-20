@@ -1,0 +1,12 @@
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Design & Concurrent & Dependent & Laundering & Repeated & No resolver \\
+\midrule
+\sys{} & Corrected & Corrected & Corrected & Corrected & Safe abort \\
+$-$ frozen snapshot & \textbf{Order-dependent} & Corrected & Corrected & Corrected & Safe abort \\
+$-$ dependency propagation & Corrected & \textbf{Faulty} & Corrected & Corrected & Safe abort \\
+$-$ fresh replacement window & Corrected & Corrected & \textbf{Faulty} & Corrected & Safe abort \\
+$-$ bounded retries & Corrected & Corrected & Corrected & \textbf{Unbounded} & Safe abort \\
+$-$ fallback/abort & Corrected & Corrected & Corrected & \textbf{Stuck} & \textbf{Stuck} \\
+\bottomrule
+\end{tabular}

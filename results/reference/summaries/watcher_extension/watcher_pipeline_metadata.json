@@ -1,0 +1,40 @@
+{
+  "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.41",
+  "python": "3.12.13",
+  "logicalCpuCount": 16,
+  "cpuModel": "11th Gen Intel(R) Core(TM) i9-11950H @ 2.60GHz",
+  "memoryTotalBytes": 66580660224,
+  "numpy": "2.3.2",
+  "filesystem": 5367868337111031489,
+  "clients": [
+    100
+  ],
+  "updateBodyBytes": [
+    1048576,
+    10485760
+  ],
+  "bandwidthMbpsForProjection": [
+    100.0,
+    1000.0,
+    10000.0
+  ],
+  "cacheModes": [
+    "warm",
+    "fadvise"
+  ],
+  "retainedRepetitions": {
+    "default": 30,
+    "atOrAboveLargeThreshold": 30,
+    "atOrAboveHugeThreshold": 30,
+    "largeThresholdBytes": 1048576,
+    "hugeThresholdBytes": 10485760
+  },
+  "scope": "Measured: local manifest lookup, file read, SHA-256 commitment check, canonical parsing/deserialization, int64 replay, checkpoint comparison, and challenge-package construction on detected faults. Projected only: ideal line-rate network transfer.",
+  "cacheCaveat": "warm is page-cache eligible. fadvise requests POSIX_FADV_DONTNEED before and after each file read, but remains an advisory local-store measurement and must not be described as guaranteed device-cold I/O.",
+  "coverageInterpretation": "A deterministic C1 watcher pays the full verification pipeline every round. The dispute rate q multiplies only challenge submission and any duplicated resolver work, not the observation needed to detect faults.",
+  "bootstrap": {
+    "samples": 10000,
+    "confidence": 0.95,
+    "scope": "Percentile-bootstrap confidence interval for the sample median of verification_ms and total_ms; deterministic seed derived from the benchmark seed and configuration."
+  }
+}

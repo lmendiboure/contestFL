@@ -1,0 +1,245 @@
+{
+  "summary": {
+    "checks": 36,
+    "passed": 36,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "name": "archive readable: bounded_gas_contention.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: competitor_extension.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: dependency_dag_retained.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: feature_ablation_retained.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: flower_mnist.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: network_smoke.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: root_depth_sensitivity.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: root_only_ablation.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: smt_offchain.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: stable_core.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: targeted_extension.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "archive readable: watcher_extension.zip",
+      "observed": null,
+      "expected": null,
+      "passed": true
+    },
+    {
+      "name": "root-only clean gas at 500",
+      "observed": "204140.0",
+      "expected": 204140,
+      "passed": true
+    },
+    {
+      "name": "materialized clean gas at 500",
+      "observed": "52944390.0",
+      "expected": 52944390,
+      "passed": true
+    },
+    {
+      "name": "root-only admission dispute gas at 500",
+      "observed": "561493.0",
+      "expected": 561493,
+      "passed": true
+    },
+    {
+      "name": "Flower total gas",
+      "observed": 790759,
+      "expected": 790759,
+      "passed": true
+    },
+    {
+      "name": "Flower transaction count",
+      "observed": 9,
+      "expected": 9,
+      "passed": true
+    },
+    {
+      "name": "Flower checkpoint equality",
+      "observed": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "watcher 100 MiB inspection median",
+      "observed": "166.98566050000002",
+      "expected": 166.9856605,
+      "passed": true
+    },
+    {
+      "name": "watcher 1000 MiB inspection median",
+      "observed": "1843.9146874999997",
+      "expected": 1843.9146875,
+      "passed": true
+    },
+    {
+      "name": "contention flood span 5000000",
+      "observed": "5.0",
+      "expected": 5,
+      "passed": true
+    },
+    {
+      "name": "honest offset 5000000",
+      "observed": "1.0",
+      "expected": 1,
+      "passed": true
+    },
+    {
+      "name": "contention flood span 10000000",
+      "observed": "3.0",
+      "expected": 3,
+      "passed": true
+    },
+    {
+      "name": "honest offset 10000000",
+      "observed": "1.0",
+      "expected": 1,
+      "passed": true
+    },
+    {
+      "name": "contention flood span 30000000",
+      "observed": "1.0",
+      "expected": 1,
+      "passed": true
+    },
+    {
+      "name": "honest offset 30000000",
+      "observed": "1.0",
+      "expected": 1,
+      "passed": true
+    },
+    {
+      "name": "depth-32 challenge gas",
+      "observed": "270941.0",
+      "expected": 270941,
+      "passed": true
+    },
+    {
+      "name": "depth-256 challenge gas",
+      "observed": "616871.0",
+      "expected": 616871,
+      "passed": true
+    },
+    {
+      "name": "DAG rows",
+      "observed": 12,
+      "expected": 12,
+      "passed": true
+    },
+    {
+      "name": "DAG invalid finalized under coverage",
+      "observed": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "DAG nonterminal cycles under coverage",
+      "observed": 0,
+      "expected": 0,
+      "passed": true
+    },
+    {
+      "name": "ablation frozen_snapshot",
+      "observed": [
+        "ORDER_SENSITIVE_ADJUDICATION"
+      ],
+      "expected": [
+        "ORDER_SENSITIVE_ADJUDICATION"
+      ],
+      "passed": true
+    },
+    {
+      "name": "ablation dependency_propagation",
+      "observed": [
+        "DEADLOCK_PARENT_MISMATCH"
+      ],
+      "expected": [
+        "DEADLOCK_PARENT_MISMATCH"
+      ],
+      "passed": true
+    },
+    {
+      "name": "ablation fresh_replacement_window",
+      "observed": [
+        "INVALID_FINALIZED"
+      ],
+      "expected": [
+        "INVALID_FINALIZED"
+      ],
+      "passed": true
+    },
+    {
+      "name": "ablation bounded_retries",
+      "observed": [
+        "NONTERMINAL_CYCLE"
+      ],
+      "expected": [
+        "NONTERMINAL_CYCLE"
+      ],
+      "passed": true
+    },
+    {
+      "name": "ablation fallback_or_abort",
+      "observed": [
+        "DEADLOCK_AT_TIMEOUT"
+      ],
+      "expected": [
+        "DEADLOCK_AT_TIMEOUT"
+      ],
+      "passed": true
+    }
+  ]
+}

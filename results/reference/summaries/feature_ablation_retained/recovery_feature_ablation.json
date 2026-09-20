@@ -1,0 +1,306 @@
+{
+  "horizon": 8,
+  "rows": [
+    {
+      "design": "full",
+      "removed_feature": "none",
+      "scenario": "dependent_fault",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid ADMIT and dependent AGGREGATE -> challenge ADMIT -> revise ADMIT -> supersede INCLUDE/AGGREGATE descendants -> publish corrected descendants -> finalize corrected checkpoint"
+    },
+    {
+      "design": "full",
+      "removed_feature": "none",
+      "scenario": "correction_laundering",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid checkpoint -> challenge and revise -> coordinator publishes invalid replacement -> open fresh window -> challenge replacement -> install valid correction -> finalize corrected checkpoint"
+    },
+    {
+      "design": "full",
+      "removed_feature": "none",
+      "scenario": "repeated_faults",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "initial revision -> publish invalid replacement 1 -> challenge replacement 1 -> publish invalid replacement 2 -> challenge replacement 2 -> publish invalid replacement 3 -> challenge replacement 3 -> retry budget exhausted -> certified fallback -> finalize corrected checkpoint"
+    },
+    {
+      "design": "full",
+      "removed_feature": "none",
+      "scenario": "resolver_unavailable",
+      "outcome": "SAFE_ABORT",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open supported challenge -> resolver deadline expires -> fail-closed abort"
+    },
+    {
+      "design": "full",
+      "removed_feature": "none",
+      "scenario": "concurrent_conflicts",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open ancestor and descendant challenges in one epoch -> freeze epoch snapshot -> resolve ancestor first -> mark descendant challenge MOOT -> finalize one corrected lineage"
+    },
+    {
+      "design": "no_snapshot",
+      "removed_feature": "frozen_snapshot",
+      "scenario": "dependent_fault",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid ADMIT and dependent AGGREGATE -> challenge ADMIT -> revise ADMIT -> supersede INCLUDE/AGGREGATE descendants -> publish corrected descendants -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_snapshot",
+      "removed_feature": "frozen_snapshot",
+      "scenario": "correction_laundering",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid checkpoint -> challenge and revise -> coordinator publishes invalid replacement -> open fresh window -> challenge replacement -> install valid correction -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_snapshot",
+      "removed_feature": "frozen_snapshot",
+      "scenario": "repeated_faults",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "initial revision -> publish invalid replacement 1 -> challenge replacement 1 -> publish invalid replacement 2 -> challenge replacement 2 -> publish invalid replacement 3 -> challenge replacement 3 -> retry budget exhausted -> certified fallback -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_snapshot",
+      "removed_feature": "frozen_snapshot",
+      "scenario": "resolver_unavailable",
+      "outcome": "SAFE_ABORT",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open supported challenge -> resolver deadline expires -> fail-closed abort"
+    },
+    {
+      "design": "no_snapshot",
+      "removed_feature": "frozen_snapshot",
+      "scenario": "concurrent_conflicts",
+      "outcome": "ORDER_DEPENDENT",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": false,
+      "trace": "open ancestor and descendant challenges in one epoch -> evaluate against mutable state -> outcome depends on transaction order"
+    },
+    {
+      "design": "no_propagation",
+      "removed_feature": "dependency_propagation",
+      "scenario": "dependent_fault",
+      "outcome": "FAULTY_FINALIZED",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid ADMIT and dependent AGGREGATE -> challenge ADMIT -> revise ADMIT -> dependent AGGREGATE remains current -> finalize obsolete checkpoint"
+    },
+    {
+      "design": "no_propagation",
+      "removed_feature": "dependency_propagation",
+      "scenario": "correction_laundering",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid checkpoint -> challenge and revise -> coordinator publishes invalid replacement -> open fresh window -> challenge replacement -> install valid correction -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_propagation",
+      "removed_feature": "dependency_propagation",
+      "scenario": "repeated_faults",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "initial revision -> publish invalid replacement 1 -> challenge replacement 1 -> publish invalid replacement 2 -> challenge replacement 2 -> publish invalid replacement 3 -> challenge replacement 3 -> retry budget exhausted -> certified fallback -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_propagation",
+      "removed_feature": "dependency_propagation",
+      "scenario": "resolver_unavailable",
+      "outcome": "SAFE_ABORT",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open supported challenge -> resolver deadline expires -> fail-closed abort"
+    },
+    {
+      "design": "no_propagation",
+      "removed_feature": "dependency_propagation",
+      "scenario": "concurrent_conflicts",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open ancestor and descendant challenges in one epoch -> freeze epoch snapshot -> resolve ancestor first -> mark descendant challenge MOOT -> finalize one corrected lineage"
+    },
+    {
+      "design": "no_fresh_window",
+      "removed_feature": "fresh_replacement_window",
+      "scenario": "dependent_fault",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid ADMIT and dependent AGGREGATE -> challenge ADMIT -> revise ADMIT -> supersede INCLUDE/AGGREGATE descendants -> publish corrected descendants -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_fresh_window",
+      "removed_feature": "fresh_replacement_window",
+      "scenario": "correction_laundering",
+      "outcome": "FAULTY_FINALIZED",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid checkpoint -> challenge and revise -> coordinator publishes invalid replacement -> replacement is terminal immediately -> finalize laundered checkpoint"
+    },
+    {
+      "design": "no_fresh_window",
+      "removed_feature": "fresh_replacement_window",
+      "scenario": "repeated_faults",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "initial revision -> publish invalid replacement 1 -> challenge replacement 1 -> publish invalid replacement 2 -> challenge replacement 2 -> publish invalid replacement 3 -> challenge replacement 3 -> retry budget exhausted -> certified fallback -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_fresh_window",
+      "removed_feature": "fresh_replacement_window",
+      "scenario": "resolver_unavailable",
+      "outcome": "SAFE_ABORT",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open supported challenge -> resolver deadline expires -> fail-closed abort"
+    },
+    {
+      "design": "no_fresh_window",
+      "removed_feature": "fresh_replacement_window",
+      "scenario": "concurrent_conflicts",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open ancestor and descendant challenges in one epoch -> freeze epoch snapshot -> resolve ancestor first -> mark descendant challenge MOOT -> finalize one corrected lineage"
+    },
+    {
+      "design": "no_retry_bound",
+      "removed_feature": "bounded_retries",
+      "scenario": "dependent_fault",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid ADMIT and dependent AGGREGATE -> challenge ADMIT -> revise ADMIT -> supersede INCLUDE/AGGREGATE descendants -> publish corrected descendants -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_retry_bound",
+      "removed_feature": "bounded_retries",
+      "scenario": "correction_laundering",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid checkpoint -> challenge and revise -> coordinator publishes invalid replacement -> open fresh window -> challenge replacement -> install valid correction -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_retry_bound",
+      "removed_feature": "bounded_retries",
+      "scenario": "repeated_faults",
+      "outcome": "UNBOUNDED",
+      "correct_checkpoint_finalized": false,
+      "terminates": false,
+      "deterministic": true,
+      "trace": "initial revision -> publish invalid replacement 1 -> challenge replacement 1 -> publish invalid replacement 2 -> challenge replacement 2 -> publish invalid replacement 3 -> challenge replacement 3 -> publish invalid replacement 4 -> challenge replacement 4 -> publish invalid replacement 5 -> challenge replacement 5 -> publish invalid replacement 6 -> challenge replacement 6 -> publish invalid replacement 7 -> challenge replacement 7 -> publish invalid replacement 8 -> challenge replacement 8 -> horizon reached while another replacement remains admissible"
+    },
+    {
+      "design": "no_retry_bound",
+      "removed_feature": "bounded_retries",
+      "scenario": "resolver_unavailable",
+      "outcome": "SAFE_ABORT",
+      "correct_checkpoint_finalized": false,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open supported challenge -> resolver deadline expires -> fail-closed abort"
+    },
+    {
+      "design": "no_retry_bound",
+      "removed_feature": "bounded_retries",
+      "scenario": "concurrent_conflicts",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open ancestor and descendant challenges in one epoch -> freeze epoch snapshot -> resolve ancestor first -> mark descendant challenge MOOT -> finalize one corrected lineage"
+    },
+    {
+      "design": "no_fallback_abort",
+      "removed_feature": "fallback_or_abort",
+      "scenario": "dependent_fault",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid ADMIT and dependent AGGREGATE -> challenge ADMIT -> revise ADMIT -> supersede INCLUDE/AGGREGATE descendants -> publish corrected descendants -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_fallback_abort",
+      "removed_feature": "fallback_or_abort",
+      "scenario": "correction_laundering",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "publish invalid checkpoint -> challenge and revise -> coordinator publishes invalid replacement -> open fresh window -> challenge replacement -> install valid correction -> finalize corrected checkpoint"
+    },
+    {
+      "design": "no_fallback_abort",
+      "removed_feature": "fallback_or_abort",
+      "scenario": "repeated_faults",
+      "outcome": "STUCK",
+      "correct_checkpoint_finalized": false,
+      "terminates": false,
+      "deterministic": true,
+      "trace": "initial revision -> publish invalid replacement 1 -> challenge replacement 1 -> publish invalid replacement 2 -> challenge replacement 2 -> publish invalid replacement 3 -> challenge replacement 3 -> retry budget exhausted -> no terminal transition"
+    },
+    {
+      "design": "no_fallback_abort",
+      "removed_feature": "fallback_or_abort",
+      "scenario": "resolver_unavailable",
+      "outcome": "STUCK",
+      "correct_checkpoint_finalized": false,
+      "terminates": false,
+      "deterministic": true,
+      "trace": "open supported challenge -> resolver deadline expires -> no timeout terminal transition"
+    },
+    {
+      "design": "no_fallback_abort",
+      "removed_feature": "fallback_or_abort",
+      "scenario": "concurrent_conflicts",
+      "outcome": "CORRECTED",
+      "correct_checkpoint_finalized": true,
+      "terminates": true,
+      "deterministic": true,
+      "trace": "open ancestor and descendant challenges in one epoch -> freeze epoch snapshot -> resolve ancestor first -> mark descendant challenge MOOT -> finalize one corrected lineage"
+    }
+  ],
+  "interpretation": "Bounded executable necessity analysis; not a gas or latency measurement."
+}

@@ -1,0 +1,11 @@
+\begin{tabularx}{\textwidth}{@{}p{2.7cm}p{4.1cm}X@{}}
+\toprule
+Removed rule & Minimal adversarial schedule & Reachable counterexample \\
+\midrule
+Frozen snapshot & Concurrent ancestor/descendant disputes & Order-sensitive verdicts \\
+Dependency propagation & Ancestor revision with dependent aggregate & Non-terminal parent mismatch \\
+Fresh replacement window & Invalid replacement after accepted challenge & \textbf{Invalid state finalizes} \\
+Bounded retries & Repeated faulty replacements & Non-terminal cycle \\
+Fallback / safe abort & Resolver timeout & Non-terminal timeout \\
+\bottomrule
+\end{tabularx}
