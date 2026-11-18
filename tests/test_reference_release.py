@@ -23,8 +23,10 @@ class ReferenceReleaseTest(unittest.TestCase):
             'network/docker-compose.generated.yml',
             'network/contracts.json',
         ]
-        manifest = json.loads((root / 'REVISION_SOURCE_MANIFEST.json').read_text(encoding='utf-8'))
-        release_paths = [item['path'].removeprefix('./') for item in manifest['code_and_document_hashes']]
+        # The public source manifest lists the distributed files. Runtime state must
+        # not be shipped, even though tests may generate it in a working tree.
+        manifest = json.loads((root / 'provenance' / 'source_files.json').read_text(encoding='utf-8'))
+        release_paths = list(manifest['files'])
         for rel in generated:
             self.assertFalse(
                 any(path == rel or path.startswith(rel + '/') for path in release_paths),

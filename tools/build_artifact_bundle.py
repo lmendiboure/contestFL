@@ -123,8 +123,9 @@ def main() -> None:
         root / "formal" / "MC_Coverage.cfg",
         root / "formal" / "MC_Structural.cfg",
         root / "README.md",
-        root / "ARTIFACT_EVALUATION.md",
-        root / "RESULTS.md",
+        root / "docs" / "experiments.md",
+        root / "docs" / "results.md",
+        root / "docs" / "data-and-provenance.md",
     ]:
         copy_if_present(path, release / "documentation" / path.relative_to(root))
 

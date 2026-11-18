@@ -1,0 +1,22 @@
+{
+  "source_contract": "contracts/ContestFLExperiment.sol",
+  "source_contract_sha256": "a0f9c03ba39e3ce92ce505e3b3b17c7f6a3c7c7e42da18efa5ee8339d42f567b",
+  "experiment_source_archive": {
+    "name": "Frozen_contract_and_source_archive_20261112.zip",
+    "sha256": "1b045b2e8933af298a96a420d2646f4371cc13db31cc2b881cc3209c080e600a"
+  },
+  "full_raw_evidence": {
+    "name": "ContestFL_Supplementary_Existing_Code_Data_20261117.zip",
+    "sha256": "f603f545ee3f9d799c45385eb0e887cac7c6bd29908eb8f7236e289b212bdb96",
+    "included_in_git": false
+  },
+  "embedded_evidence_sha256": {
+    "CAUSAL_RESULTS.json": "715fdaf80ad6285a85eadc2bafb5bf60f1dd83deba5dca3605272b12fa4b8cea",
+    "CAUSAL_TABLE.tex": "c8ea043d40e9b70fffc9fdc424caf18240a796ed635430dd6d1e6556df160401",
+    "FLOWER_EAGER_TABLE.tex": "9669bff94f39352cfb1a6e5180b049f77eb7b98127fb83baeceb31e9e368680d",
+    "MULTIROUND_ANALYSIS.json": "37785fcc010b7241ea5824622dd13957cd27f3238ee3029cded5a77a287f0d20",
+    "MULTIROUND_PAIRED.csv": "6ce2fad3df2447a0e13d38eb94c085bafa7636085bfa072edea2fca062530b77",
+    "PAIRED_POLICIES_RAW.csv": "b0f47d91a2ba8bd22b8f7203db5ad59a6b6be4b905ff1f61d606f6d76cac66bf"
+  },
+  "note": "The hashes identify archived experimental evidence and source snapshots; they do not assert a new experimental run."
+}

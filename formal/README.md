@@ -22,7 +22,7 @@ Run:
 The script downloads the official pinned `tla2tools.jar`, checks its published
 SHA-1, runs TLC, retains raw output, and extracts generated/distinct-state counts.
 The finite model is supporting validation. The parameterized claims rely on the
-mathematical proofs in `supplementary/contestfl_formal_supplement.tex`.
+mathematical proofs in `supplementary/contestfl_supplement.tex`.
 
 ## Reproducibility output
 
@@ -40,7 +40,7 @@ source archives. `validate_retained_dag.py` validates the retained table's schem
 and reported invariants but deliberately does not claim to reconstruct the
 missing state graph.
 
-## Dynamic-key review extension (October 2026)
+## Bounded dynamic-key analysis
 
 `dynamic_dependency_check.py` supplies a **new, independently executable**
 two-client bounded abstraction. Unlike the retained three-key table (whose
@@ -55,4 +55,4 @@ python3 formal/dynamic_dependency_check.py --output-dir results/runs/review_dyna
 
 The checker is automatically run by `run_auxiliary_checks.sh`. This is **not**
 a TLA+ checker or a refinement proof for Solidity. See
-`docs/REVIEWER_REVISION_ENGINEERING.md` for exact limitations.
+[Architecture](../docs/architecture.md) for the model and implementation scope.

@@ -1,6 +1,8 @@
-# November 2026 result extracts
+# Paired-policy and multi-round result extracts
 
-These six files are copied byte-for-byte from the archived Besu and Flower experiment ZIP files. They are not new measurements and are not the complete raw trajectory archive. Their SHA-256 values are in `REVISION_2026_11_MANIFEST.json` at the repository root; the complete original data archive is identified in `ARTIFACT_RELEASE_2026_11.md`.
+This directory contains files copied from the archived causal-recovery and Flower campaigns. They are compact tabular extracts, not a substitute for the full EVM logs and Flower checkpoints.
 
-- `CAUSAL_RESULTS.json`, `PAIRED_POLICIES_RAW.csv`, `CAUSAL_TABLE.tex`, `FLOWER_EAGER_TABLE.tex`: `single_final_jisa_20261113T071341_single_version_run.zip`.
-- `MULTIROUND_PAIRED.csv`, `MULTIROUND_ANALYSIS.json`: `single_final_jisa_20261113T071341_corrected_flower_multiround_run.zip`.
+- `CAUSAL_RESULTS.json`, `PAIRED_POLICIES_RAW.csv`, `CAUSAL_TABLE.tex`, `FLOWER_EAGER_TABLE.tex`: paired-policy source archive.
+- `MULTIROUND_PAIRED.csv`, `MULTIROUND_ANALYSIS.json`: multi-round source archive.
+
+The SHA-256 values are recorded in `provenance/experiment_sources.json`; see [Data and provenance](../../docs/data-and-provenance.md).
