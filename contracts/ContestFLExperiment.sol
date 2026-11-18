@@ -28,6 +28,11 @@ contract ContestFLExperiment {
         bytes32 admittedRoot;
         bytes32 aggregateInputRoot;
         bytes32 checkpointHash;
+        // A phase cannot remain open indefinitely when the coordinator or
+        // resolver becomes unavailable. Zero means no replacement window yet.
+        uint64 submissionDeadline;
+        uint64 replacementDeadline;
+        uint32 replacementBlocks;
     }
 
     struct Challenge {
@@ -49,6 +54,12 @@ contract ContestFLExperiment {
     address public coordinator;
     address public resolver;
     uint256 public nextChallengeId = 1;
+    // Optional experiment-only per-identity bound (0 = disabled). It does not
+    // protect against Sybil identities; permissioned governance must bound
+    // the number of eligible identities for a formal capacity guarantee.
+    uint32 public maxChallengesPerIdentity;
+    mapping(bytes32 => uint32) public challengesByIdentityEpoch;
+
 
     mapping(uint256 => Round) public rounds;
     mapping(uint256 => mapping(bytes32 => bytes32)) public submissionHash;
@@ -59,6 +70,7 @@ contract ContestFLExperiment {
     mapping(bytes32 => bool) public duplicateChallenge;
 
     event RolesChanged(address indexed coordinator, address indexed resolver);
+    event ChallengeQuotaChanged(uint32 maxChallengesPerIdentity);
     event RoundOpened(uint256 indexed roundId, uint32 expectedSubmissions, uint8 retryBudget);
     event SubmissionReceived(uint256 indexed roundId, bytes32 indexed clientId, bytes32 updateHash);
     event DecisionPublished(uint256 indexed roundId, bytes32 indexed clientId, uint8 state, uint32 version);
@@ -90,6 +102,8 @@ contract ContestFLExperiment {
     event ChallengeExpired(uint256 indexed challengeId, uint256 indexed roundId);
     event RoundFinalized(uint256 indexed roundId, bytes32 checkpointHash, uint32 epoch);
     event RoundAborted(uint256 indexed roundId, bytes32 reason);
+    event SubmissionWindowOpened(uint256 indexed roundId, uint64 deadline);
+    event ReplacementWindowOpened(uint256 indexed roundId, uint64 deadline);
 
     error AdminOnly();
     error CoordinatorOnly();
@@ -102,10 +116,16 @@ contract ContestFLExperiment {
     error ChallengeWindowClosed();
     error ChallengeWindowOpen();
     error InvalidChallenge();
+    error InvalidMootDescendant();
+    error ChallengeQuotaExceeded();
     error RetryExhausted();
     error OpenChallengesRemain();
     error ResponseDeadlineOpen();
     error ResponseDeadlineExpired();
+    error SubmissionDeadlineOpen();
+    error SubmissionDeadlineExpired();
+    error ReplacementDeadlineOpen();
+    error ReplacementDeadlineExpired();
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert AdminOnly();
@@ -137,6 +157,18 @@ contract ContestFLExperiment {
         emit RolesChanged(nextCoordinator, nextResolver);
     }
 
+    /// @notice Set a per-(round, epoch, address) challenge limit.
+    /// @dev 0 restores legacy unbounded challenge ingress. A deployment must
+    ///      enforce challenger identities separately to prevent Sybil evasion.
+    function setMaxChallengesPerIdentity(uint32 maximum) external onlyAdmin {
+        maxChallengesPerIdentity = maximum;
+        emit ChallengeQuotaChanged(maximum);
+    }
+
+    /// @notice Legacy entry point retained for existing benchmark drivers.
+    /// @dev The default SUBMIT window is deliberately generous (2n+32 blocks)
+    ///      to avoid changing valid benchmark traces; production deployments
+    ///      should use openRoundWithTimeouts with explicit deadlines.
     function openRound(
         uint256 roundId,
         uint32 expectedSubmissions,
@@ -144,20 +176,66 @@ contract ContestFLExperiment {
         uint32 responseBlocks,
         uint8 retryBudget
     ) external onlyCoordinator {
+        uint256 defaultSubmissionBlocks = 2 * uint256(expectedSubmissions) + 32;
+        if (defaultSubmissionBlocks < challengeBlocks) defaultSubmissionBlocks = challengeBlocks;
+        _openRound(roundId, expectedSubmissions, challengeBlocks, responseBlocks,
+                   retryBudget, defaultSubmissionBlocks, responseBlocks);
+    }
+
+    /// @notice Explicit liveness windows, in blocks, for a fresh round.
+    /// @dev A public caller can safely abort after either deadline. These
+    ///      bounds are relative to a responsive blockchain and a transaction
+    ///      that eventually reaches the chain, not wall-clock guarantees.
+    function openRoundWithTimeouts(
+        uint256 roundId,
+        uint32 expectedSubmissions,
+        uint32 challengeBlocks,
+        uint32 responseBlocks,
+        uint8 retryBudget,
+        uint32 submissionBlocks,
+        uint32 replacementBlocks
+    ) external onlyCoordinator {
+        _openRound(roundId, expectedSubmissions, challengeBlocks, responseBlocks,
+                   retryBudget, submissionBlocks, replacementBlocks);
+    }
+
+    function _openRound(
+        uint256 roundId,
+        uint32 expectedSubmissions,
+        uint32 challengeBlocks,
+        uint32 responseBlocks,
+        uint8 retryBudget,
+        uint256 submissionBlocks,
+        uint32 replacementBlocks
+    ) internal {
         Round storage r = rounds[roundId];
         if (r.phase != Phase.NONE) revert InvalidPhase();
-        if (expectedSubmissions == 0 || challengeBlocks == 0 || responseBlocks == 0) revert InvalidArgument();
+        if (expectedSubmissions == 0 || challengeBlocks == 0 || responseBlocks == 0 ||
+            submissionBlocks == 0 || replacementBlocks == 0) revert InvalidArgument();
         r.expectedSubmissions = expectedSubmissions;
         r.challengeBlocks = challengeBlocks;
         r.responseBlocks = responseBlocks;
         r.retryBudget = retryBudget;
+        r.replacementBlocks = replacementBlocks;
+        r.submissionDeadline = _deadline(submissionBlocks);
         r.phase = Phase.SUBMIT;
         emit RoundOpened(roundId, expectedSubmissions, retryBudget);
+        emit SubmissionWindowOpened(roundId, r.submissionDeadline);
+    }
+
+    /// @notice Public fail-closed exit when submissions/initial publication stop.
+    function expireSubmission(uint256 roundId) external {
+        Round storage r = rounds[roundId];
+        if (r.phase != Phase.SUBMIT) revert InvalidPhase();
+        if (block.number <= r.submissionDeadline) revert SubmissionDeadlineOpen();
+        r.phase = Phase.ABORTED;
+        emit RoundAborted(roundId, sha256(abi.encodePacked("ContestFL:submission-timeout", roundId)));
     }
 
     function submit(uint256 roundId, bytes32 clientId, bytes32 updateHash) external {
         Round storage r = rounds[roundId];
         if (r.phase != Phase.SUBMIT) revert InvalidPhase();
+        if (block.number > r.submissionDeadline) revert SubmissionDeadlineExpired();
         if (clientId == bytes32(0) || updateHash == bytes32(0)) revert InvalidArgument();
         if (submissionHash[roundId][clientId] != bytes32(0)) revert DuplicateSubmission();
         if (r.submissionCount >= r.expectedSubmissions) revert InvalidArgument();
@@ -173,6 +251,7 @@ contract ContestFLExperiment {
     ) external onlyCoordinator {
         Round storage r = rounds[roundId];
         if (r.phase != Phase.SUBMIT) revert InvalidPhase();
+        if (block.number > r.submissionDeadline) revert SubmissionDeadlineExpired();
         if (clientIds.length == 0 || clientIds.length != states.length) revert InvalidArgument();
         for (uint256 i = 0; i < clientIds.length; ++i) {
             bytes32 clientId = clientIds[i];
@@ -196,10 +275,11 @@ contract ContestFLExperiment {
     ) external onlyCoordinator {
         Round storage r = rounds[roundId];
         if (r.phase != Phase.SUBMIT) revert InvalidPhase();
+        if (block.number > r.submissionDeadline) revert SubmissionDeadlineExpired();
         if (r.submissionCount != r.expectedSubmissions || r.decisionCount != r.expectedSubmissions) revert InvalidArgument();
         _installState(r, roundId, submissionRoot, admittedRoot, aggregateInputRoot, checkpointHash, false);
         r.phase = Phase.CHALLENGE;
-        r.challengeEndBlock = uint64(block.number + r.challengeBlocks);
+        r.challengeEndBlock = _deadline(r.challengeBlocks);
         emit StatePublished(roundId, r.epoch, submissionRoot, admittedRoot, aggregateInputRoot, checkpointHash, false, r.challengeEndBlock);
     }
 
@@ -217,6 +297,15 @@ contract ContestFLExperiment {
         if (kind != DecisionKind.AGGREGATE && submissionHash[roundId][clientId] == bytes32(0)) revert MissingSubmission();
         bytes32 dedupe = keccak256(abi.encode(roundId, r.epoch, kind, clientId, reason));
         if (duplicateChallenge[dedupe]) revert InvalidChallenge();
+        // Keep the default (zero) protocol behavior unchanged for the
+        // historical campaigns; configure an explicit quota for the ablation.
+        if (maxChallengesPerIdentity != 0) {
+            bytes32 identityKey = keccak256(abi.encode(roundId, r.epoch, msg.sender));
+            if (challengesByIdentityEpoch[identityKey] >= maxChallengesPerIdentity) {
+                revert ChallengeQuotaExceeded();
+            }
+            unchecked { challengesByIdentityEpoch[identityKey] += 1; }
+        }
         duplicateChallenge[dedupe] = true;
 
         challengeId = nextChallengeId++;
@@ -231,7 +320,7 @@ contract ContestFLExperiment {
             evidenceHash: evidenceHash,
             certificateHash: bytes32(0),
             openedBlock: uint64(block.number),
-            responseDeadline: uint64(block.number + r.responseBlocks),
+            responseDeadline: _deadline(r.responseBlocks),
             outcome: ChallengeOutcome.OPEN
         });
         unchecked { r.openChallenges += 1; }
@@ -260,6 +349,10 @@ contract ContestFLExperiment {
         if (outcome == ChallengeOutcome.REVISED) {
             if (c.kind != DecisionKind.AGGREGATE) {
                 if (correctedState < 1 || correctedState > 3) revert InvalidArgument();
+                // An unchanged value is not a correction. Allowing it would
+                // let a trusted-but-faulty resolver moot a genuine dependent
+                // challenge without revising its ancestor.
+                if (decisionState[c.roundId][c.clientId] == correctedState) revert InvalidArgument();
                 decisionState[c.roundId][c.clientId] = correctedState;
                 unchecked { decisionVersion[c.roundId][c.clientId] += 1; }
                 emit DecisionPublished(c.roundId, c.clientId, correctedState, decisionVersion[c.roundId][c.clientId]);
@@ -270,14 +363,33 @@ contract ContestFLExperiment {
             r.phase = Phase.RESOLVING;
         }
 
+        // A resolver is not allowed to suppress an unrelated live challenge.
+        // The experimental schema has only ADMIT -> INCLUDE (same client)
+        // -> AGGREGATE, with both ADMIT and INCLUDE preceding AGGREGATE.
+        // This check enforces causal standing for the MOOT transition; it
+        // does not authenticate the resolver's evidence or validate roots.
+        if (mootChallengeIds.length != 0 && outcome != ChallengeOutcome.REVISED) {
+            revert InvalidMootDescendant();
+        }
         for (uint256 i = 0; i < mootChallengeIds.length; ++i) {
             Challenge storage descendant = challenges[mootChallengeIds[i]];
             if (descendant.roundId != c.roundId || descendant.epoch != c.epoch || descendant.outcome != ChallengeOutcome.OPEN) revert InvalidChallenge();
+            bool isDescendant =
+                (c.kind == DecisionKind.ADMIT && descendant.kind == DecisionKind.INCLUDE && descendant.clientId == c.clientId) ||
+                ((c.kind == DecisionKind.ADMIT || c.kind == DecisionKind.INCLUDE) && descendant.kind == DecisionKind.AGGREGATE);
+            if (!isDescendant) revert InvalidMootDescendant();
             descendant.outcome = ChallengeOutcome.MOOT;
             unchecked { r.openChallenges -= 1; }
             emit DescendantChallengeMoot(mootChallengeIds[i]);
         }
 
+        // When every outstanding challenge has either been resolved or mooted,
+        // start the single replacement window. Pending challenges retain their
+        // individual response deadlines (which can abort the whole round).
+        if (r.needsReplacement && r.openChallenges == 0 && r.replacementDeadline == 0) {
+            r.replacementDeadline = _deadline(r.replacementBlocks);
+            emit ReplacementWindowOpened(c.roundId, r.replacementDeadline);
+        }
         emit ChallengeResolved(challengeId, outcome, correctedState, certificateHash);
     }
 
@@ -289,11 +401,23 @@ contract ContestFLExperiment {
         if (c.outcome != ChallengeOutcome.OPEN) revert InvalidChallenge();
         if (block.number <= c.responseDeadline) revert ResponseDeadlineOpen();
         Round storage r = rounds[c.roundId];
+        if (r.phase != Phase.CHALLENGE && r.phase != Phase.RESOLVING) revert InvalidPhase();
         c.outcome = ChallengeOutcome.DISMISSED;
         unchecked { r.openChallenges -= 1; }
         r.phase = Phase.ABORTED;
         emit ChallengeExpired(challengeId, c.roundId);
         emit RoundAborted(c.roundId, sha256(abi.encodePacked("ContestFL:resolver-timeout", challengeId)));
+    }
+
+    /// @notice Public fail-closed exit if no coordinator replacement nor
+    ///         resolver fallback was published during the replacement window.
+    function expireReplacement(uint256 roundId) external {
+        Round storage r = rounds[roundId];
+        if (r.phase != Phase.RESOLVING || !r.needsReplacement ||
+            r.openChallenges != 0 || r.replacementDeadline == 0) revert InvalidPhase();
+        if (block.number <= r.replacementDeadline) revert ReplacementDeadlineOpen();
+        r.phase = Phase.ABORTED;
+        emit RoundAborted(roundId, sha256(abi.encodePacked("ContestFL:replacement-timeout", roundId, r.epoch)));
     }
 
     function publishCoordinatorReplacement(
@@ -305,15 +429,17 @@ contract ContestFLExperiment {
     ) external onlyCoordinator {
         Round storage r = rounds[roundId];
         if (r.phase != Phase.RESOLVING || !r.needsReplacement) revert InvalidPhase();
+        if (r.replacementDeadline == 0 || block.number > r.replacementDeadline) revert ReplacementDeadlineExpired();
         if (r.openChallenges != 0) revert OpenChallengesRemain();
         if (r.retriesUsed >= r.retryBudget) revert RetryExhausted();
         unchecked {
             r.retriesUsed += 1;
             r.epoch += 1;
         }
+        r.replacementDeadline = 0;
         _installState(r, roundId, submissionRoot, admittedRoot, aggregateInputRoot, checkpointHash, false);
         r.phase = Phase.CHALLENGE;
-        r.challengeEndBlock = uint64(block.number + r.challengeBlocks);
+        r.challengeEndBlock = _deadline(r.challengeBlocks);
         emit StatePublished(roundId, r.epoch, submissionRoot, admittedRoot, aggregateInputRoot, checkpointHash, false, r.challengeEndBlock);
     }
 
@@ -326,8 +452,10 @@ contract ContestFLExperiment {
     ) external onlyResolver {
         Round storage r = rounds[roundId];
         if (r.phase != Phase.RESOLVING || !r.needsReplacement) revert InvalidPhase();
+        if (r.replacementDeadline == 0 || block.number > r.replacementDeadline) revert ReplacementDeadlineExpired();
         if (r.openChallenges != 0) revert OpenChallengesRemain();
         unchecked { r.epoch += 1; }
+        r.replacementDeadline = 0;
         _installState(r, roundId, submissionRoot, admittedRoot, aggregateInputRoot, checkpointHash, true);
         r.phase = Phase.READY;
         emit StatePublished(roundId, r.epoch, submissionRoot, admittedRoot, aggregateInputRoot, checkpointHash, true, 0);
@@ -379,6 +507,23 @@ contract ContestFLExperiment {
             r.needsReplacement,
             r.checkpointHash
         );
+    }
+
+    /// @dev Checked conversion prevents truncation of a deadline to uint64.
+    function _deadline(uint256 blocksAhead) internal view returns (uint64) {
+        uint256 end = block.number + blocksAhead;
+        if (end > type(uint64).max) revert InvalidArgument();
+        return uint64(end);
+    }
+
+    /// @notice Phase-specific deadlines without changing the historic status ABI.
+    function getLivenessDeadlines(uint256 roundId) external view returns (
+        uint64 submissionDeadline,
+        uint64 replacementDeadline,
+        uint32 replacementBlocks
+    ) {
+        Round storage r = rounds[roundId];
+        return (r.submissionDeadline, r.replacementDeadline, r.replacementBlocks);
     }
 
     function _installState(

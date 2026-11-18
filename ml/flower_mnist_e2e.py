@@ -193,10 +193,15 @@ class CaptureFedAvg(fl.server.strategy.FedAvg):
         return aggregated
 
 
-def server_process(address: str, clients: int, output_dir: str, seed: int) -> None:
+def server_process(address: str, clients: int, output_dir: str, seed: int,
+                   initial_params: str | None = None) -> None:
     seed_everything(seed)
     initial_model = MnistNet()
     initial = model_ndarrays(initial_model)
+    if initial_params is not None:
+        from ml.multiround_state import read_model
+        initial = read_model(Path(initial_params), initial)
+        set_model_ndarrays(initial_model, initial)
     strategy = CaptureFedAvg(
         output_dir,
         fraction_fit=1.0,
@@ -390,12 +395,15 @@ def commit_to_contestfl(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--skip-chain", action="store_true", help="Train Flower and export measured canonical artifacts only; used for paired policy replay")
     parser.add_argument("--clients", type=int, default=2)
     parser.add_argument("--samples-per-client", type=int, default=512)
     parser.add_argument("--local-epochs", type=int, default=1)
     parser.add_argument("--learning-rate", type=float, default=0.05)
     parser.add_argument("--scale", type=int, default=1_000_000)
     parser.add_argument("--seed", type=int, default=20260806)
+    parser.add_argument("--initial-params", type=Path, default=None,
+                        help="Canonical finalized model from the previous verified on-chain round")
     parser.add_argument("--port", type=int, default=8087)
     parser.add_argument("--data-dir", default="/data")
     parser.add_argument("--output-dir", required=True)
@@ -414,9 +422,16 @@ def main() -> None:
 
     initial_model = MnistNet()
     initial_arrays = model_ndarrays(initial_model)
+    if args.initial_params is not None:
+        from ml.multiround_state import read_model
+        initial_arrays = read_model(args.initial_params, initial_arrays)
+    flower_start = time.perf_counter_ns()
     address = f"127.0.0.1:{args.port}"
     context = mp.get_context("spawn")
-    server = context.Process(target=server_process, args=(address, args.clients, str(output), args.seed))
+    server = context.Process(target=server_process, args=(
+        address, args.clients, str(output), args.seed,
+        str(args.initial_params.resolve()) if args.initial_params is not None else None,
+    ))
     server.start()
     time.sleep(2.0)
     clients = [
@@ -440,6 +455,8 @@ def main() -> None:
     if server.exitcode != 0:
         raise RuntimeError(f"Flower server failed with exit code {server.exitcode}")
 
+    flower_train_ms = (time.perf_counter_ns() - flower_start) / 1e6
+    artifact_start = time.perf_counter_ns()
     artifacts = [(output / f"client_{i}.cflupd").read_bytes() for i in range(args.clients)]
     parsed = [parse_artifact(payload) for payload in artifacts]
     updates = [values for values, _ in parsed]
@@ -475,11 +492,43 @@ def main() -> None:
     dequantized_mean = accumulator.astype(np.float64) / (args.scale * args.clients)
     cursor = 0
     max_abs_error = 0.0
+    next_arrays = []
     for initial, aggregated in zip(initial_arrays, flower_aggregate):
         count = int(np.prod(initial.shape))
         reconstructed = np.asarray(initial, dtype=np.float64) + dequantized_mean[cursor : cursor + count].reshape(initial.shape)
         max_abs_error = max(max_abs_error, float(np.max(np.abs(reconstructed - np.asarray(aggregated, dtype=np.float64)))))
+        next_arrays.append(reconstructed.astype(np.asarray(initial).dtype, copy=False))
         cursor += count
+
+    # Candidate next model: do not adopt as a finalized checkpoint until
+    # review/multiround_flower.py verifies the on-chain finalization receipt.
+    from ml.multiround_state import write_model, model_digest
+    next_model_path = output / "CANDIDATE_NEXT_MODEL.npz"
+    write_model(next_model_path, next_arrays)
+    artifact_processing_ms = (time.perf_counter_ns() - artifact_start) / 1e6
+    if args.skip_chain:
+        artifact_report = {
+            "mode": "flower_only_for_paired_policy_replay",
+            "seed": args.seed, "clients": args.clients,
+            "samples_per_client": args.samples_per_client,
+            "local_epochs": args.local_epochs, "flower_train_ms": flower_train_ms,
+            "artifact_processing_ms": artifact_processing_ms,
+            "artifact_bytes_total": sum(len(v) for v in artifacts),
+            "artifact_sha256": [h.hex() for h in artifact_hashes],
+            "checkpoint": checkpoint.hex(), "values_per_update": int(updates[0].size),
+            "input_model_digest": model_digest(initial_arrays),
+            "candidate_model_digest": model_digest(next_arrays),
+            "initial_params_path": str(args.initial_params) if args.initial_params else None,
+            "replay_upheld": replay.verdict == "UPHELD" and replay.valid_evidence,
+            "reconstruction_max_abs_error": max_abs_error,
+            "flower_version": fl.__version__, "torch_version": torch.__version__,
+            "measurement_note": "Measured common Flower train and export; separate sequential ledger policy executions reuse identical artifacts. Not a multi-round concurrent throughput benchmark."
+        }
+        (output / "FLOWER_ARTIFACT_REPORT.json").write_text(json.dumps(artifact_report, indent=2) + "\n")
+        print(json.dumps(artifact_report, indent=2), flush=True)
+        if not artifact_report["replay_upheld"] or max_abs_error > 2.0 / args.scale:
+            raise RuntimeError("Flower artifact/replay validation failed")
+        return
 
     chain = commit_to_contestfl(
         args.rpc, updates, artifact_hashes, checkpoint, args.smt_depth, args.challenge_blocks

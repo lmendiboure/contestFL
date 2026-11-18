@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 EXCLUDED_PARTS = {
-    ".git", ".cache", "artifacts", "results", "__pycache__", ".pytest_cache",
+    ".git", ".cache", "artifacts", "results", "review_outputs", "__pycache__", ".pytest_cache",
     ".mypy_cache", ".ruff_cache", "node_modules",
 }
 EXCLUDED_NAMES = {".env"}

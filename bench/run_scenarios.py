@@ -973,6 +973,70 @@ def scenario_concurrent_moot(ctx: Context) -> tuple[str, bytes]:
     return "FINALIZED", expected
 
 
+def scenario_adversarial_moot_guard(ctx: Context) -> tuple[str, bytes]:
+    """On-chain negative test: a corrected ADMIT cannot silence another client.
+
+    The rejected eth_call executes Solidity without mining a reverted tx; this
+    scenario is a functional conformance check, not a gas-cost measurement of
+    an adversarial transaction. The valid follow-up is finalized normally.
+    """
+    if ctx.clients < 2:
+        raise ValueError("adversarial_moot_guard requires at least 2 clients")
+    # This is a validity test, not a latency comparison: allocate sufficient
+    # time for two independent challenges and two negative RPC probes.
+    ctx.challenge_blocks = max(ctx.challenge_blocks, 8)
+    ctx.response_blocks = max(ctx.response_blocks, 20)
+    states = [3] * ctx.clients
+    states[0] = 1
+    corrected = [3] * ctx.clients
+    expected = ctx.data.checkpoint(corrected)
+    ctx.open_contract_round(states, ctx.data.checkpoint(states))
+    evidence = ctx.admission_evidence(0, observed_state=1, policy_state=3)
+    _require_adapter(evidence, "REVISED")
+    ancestor = ctx.open_challenge(
+        "ADMIT", ctx.data.client_ids[0], 3, "invalid_admission_0",
+        evidence_hash=evidence.evidence_hash,
+    )
+    unrelated = ctx.open_challenge(
+        "ADMIT", ctx.data.client_ids[1], 1, "independent_admission_1",
+    )
+    ctx.record_adapter(ancestor, evidence)
+
+    resolver_address = Account.from_key(ctx.keys["resolver"]).address
+    status_before = ctx.contract.functions.getRoundStatus(ctx.round_id).call()
+    bypasses = (
+        (OUTCOME["REVISED"], 3, [unrelated], "unrelated-cannot-be-mooted"),
+        (OUTCOME["UPHELD"], 0, [unrelated], "upheld-cannot-moot"),
+        (OUTCOME["REVISED"], 1, [], "unchanged-ancestor-is-not-a-revision"),
+    )
+    for outcome, claimed_state, moot_ids, label in bypasses:
+        fn = ctx.contract.functions.resolveChallenge(
+            ancestor, outcome, claimed_state, evidence.certificate_hash,
+            moot_ids,
+        )
+        try:
+            fn.call({"from": resolver_address})
+        except Exception:
+            pass  # Expected EVM revert, independent of Web3 exception class.
+        else:
+            raise AssertionError(f"unprotected bypass: {label}")
+        if ctx.contract.functions.getRoundStatus(ctx.round_id).call() != status_before:
+            raise AssertionError("an expected-revert probe mutated round state")
+
+    ctx.resolve(
+        ancestor, evidence.verdict, evidence.corrected_state,
+        certificate_hash=evidence.certificate_hash,
+    )
+    # The unrelated challenge must still be open and can be resolved normally.
+    if int(ctx.contract.functions.challenges(unrelated).call()[-1]) != OUTCOME["OPEN"]:
+        raise AssertionError("unrelated challenge was improperly mooted")
+    ctx.resolve(unrelated, "UPHELD")
+    ctx.publish_replacement(corrected, expected)
+    ctx.wait_challenge_window()
+    ctx.finalize()
+    return "FINALIZED", expected
+
+
 def scenario_challenge_flooding(ctx: Context) -> tuple[str, bytes]:
     states = [3] * ctx.clients
     expected = ctx.data.checkpoint(states)
@@ -1111,6 +1175,71 @@ def scenario_artifact_unavailable_abort(ctx: Context) -> tuple[str, bytes]:
     return "ABORTED", ZERO32
 
 
+def scenario_review_quota_dedupe(ctx: Context) -> tuple[str, bytes]:
+    """On-chain policy ablation: quota, reset, identity, epoch, exact dedupe.
+
+    This tests enforceability of an *optional per-address* bound. It is not a
+    proof of admission fairness under Sybil/flooding adversaries.
+    """
+    if "challenger1" not in ctx.keys:
+        raise RuntimeError("two distinct challenger identities are required")
+    correct = [3] * ctx.clients
+    expected = ctx.data.checkpoint(correct)
+    ctx.challenge_blocks = max(ctx.challenge_blocks, 15)
+    ctx.response_blocks = max(ctx.response_blocks, 30)
+    ctx.open_contract_round(correct)
+    previous_limit = int(ctx.contract.functions.maxChallengesPerIdentity().call())
+    try:
+        ctx.sender.send_one(
+            ctx.contract.functions.setMaxChallengesPerIdentity(1),
+            ctx.keys["admin"], "configure_quota",
+        )
+        first = ctx.open_challenge("AGGREGATE", reason="flood_dedupe_A")
+        # This is a distinct reason and passes the existing dedupe check, but
+        # must fail at the per-address quota check.
+        second_call = ctx.contract.functions.openChallenge(
+            ctx.round_id, KIND["AGGREGATE"], ZERO32, 0,
+            sha256(b"flood_dedupe_B"), sha256(b"different_evidence"),
+        )
+        first_address = Account.from_key(ctx.keys["challenger0"]).address
+        try:
+            second_call.call({"from": first_address})
+        except Exception:
+            pass
+        else:
+            raise AssertionError("second challenge from same identity bypassed quota")
+
+        # A different challenger is admissible with a different reason.
+        second = ctx.open_challenge(
+            "AGGREGATE", reason="flood_dedupe_B",
+            challenger_index=1,
+        )
+        # Dedupe must bind the claim independently of the sender identity.
+        duplicate_call = ctx.contract.functions.openChallenge(
+            ctx.round_id, KIND["AGGREGATE"], ZERO32, 0,
+            sha256(b"flood_dedupe_A"), sha256(b"duplicate_evidence"),
+        )
+        second_address = Account.from_key(ctx.keys["challenger1"]).address
+        try:
+            duplicate_call.call({"from": second_address})
+        except Exception:
+            pass
+        else:
+            raise AssertionError("duplicate challenge reason bypassed global dedupe")
+        ctx.resolve(first, "UPHELD")
+        ctx.resolve(second, "UPHELD")
+        ctx.wait_challenge_window()
+        ctx.finalize()
+        return "FINALIZED", expected
+    finally:
+        # Restore configuration even if the assertions fail; the previous
+        # policy must not taint unrelated repetitions in the same network.
+        ctx.sender.send_one(
+            ctx.contract.functions.setMaxChallengesPerIdentity(previous_limit),
+            ctx.keys["admin"], "restore_quota",
+        )
+
+
 SCENARIOS: dict[str, Callable[[Context], tuple[str, bytes]]] = {
     "logging_only": scenario_logging_only,
     "nominal": scenario_nominal,
@@ -1121,6 +1250,8 @@ SCENARIOS: dict[str, Callable[[Context], tuple[str, bytes]]] = {
     "resolver_fallback": scenario_resolver_fallback,
     "correction_laundering": scenario_correction_laundering,
     "concurrent_moot": scenario_concurrent_moot,
+    "adversarial_moot_guard": scenario_adversarial_moot_guard,
+    "review_quota_dedupe": scenario_review_quota_dedupe,
     "challenge_flooding": scenario_challenge_flooding,
     "affected_decisions": scenario_affected_decisions,
     "faulty_replacement_chain": scenario_faulty_replacement_chain,

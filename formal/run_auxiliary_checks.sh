@@ -7,6 +7,7 @@ RUN_ID="${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)_auxiliary_formal}"
 RESULT_DIR="${RESULT_DIR:-$ROOT/results/runs/$RUN_ID}"
 mkdir -p "$RESULT_DIR"
 "$PYTHON_BIN" "$ROOT/formal/feature_ablation_check.py" --output-dir "$RESULT_DIR/feature_ablation"
+"$PYTHON_BIN" "$ROOT/formal/dynamic_dependency_check.py" --output-dir "$RESULT_DIR/dynamic_dependency"
 "$PYTHON_BIN" "$ROOT/formal/validate_retained_dag.py" | tee "$RESULT_DIR/dependency_dag_validation.json"
 (cd "$ROOT" && "$PYTHON_BIN" -c "import shutil; shutil.make_archive('$RESULT_DIR','zip','$RESULT_DIR')")
 echo "Auxiliary formal checks complete: $RESULT_DIR"

@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "seed_count": 5,
+    "complete_pairs": 5,
+    "failed_pairs": 0,
+    "paired_mean_delta_rounds_per_hour": -87.82678347169552,
+    "paired_sd": 24.08053996873024,
+    "all_complete": true,
+    "warning": "Paired across independent trajectories, not across the 20 rounds of a single seed; no pipelined FL throughput claim."
+  },
+  "paired": [
+    {
+      "seed": 20261201,
+      "contestfl_success": true,
+      "eager_success": true,
+      "contestfl_completed": 20,
+      "eager_completed": 20,
+      "contestfl_rounds_per_hour": 122.68002551274256,
+      "eager_rounds_per_hour": 204.54624367556505,
+      "delta_rounds_per_hour": -81.86621816282249,
+      "contestfl_elapsed_ms": 586892.6070000001,
+      "eager_elapsed_ms": 351998.64200000005
+    },
+    {
+      "seed": 20261302,
+      "contestfl_success": true,
+      "eager_success": true,
+      "contestfl_completed": 20,
+      "eager_completed": 20,
+      "contestfl_rounds_per_hour": 124.27604929297648,
+      "eager_rounds_per_hour": 202.1417695359113,
+      "delta_rounds_per_hour": -77.86572024293481,
+      "contestfl_elapsed_ms": 579355.3979999999,
+      "eager_elapsed_ms": 356185.662
+    },
+    {
+      "seed": 20261403,
+      "contestfl_success": true,
+      "eager_success": true,
+      "contestfl_completed": 20,
+      "eager_completed": 20,
+      "contestfl_rounds_per_hour": 124.71591835701052,
+      "eager_rounds_per_hour": 208.5881186504147,
+      "delta_rounds_per_hour": -83.87220029340419,
+      "contestfl_elapsed_ms": 577312.0299999999,
+      "eager_elapsed_ms": 345177.858
+    },
+    {
+      "seed": 20261504,
+      "contestfl_success": true,
+      "eager_success": true,
+      "contestfl_completed": 20,
+      "eager_completed": 20,
+      "contestfl_rounds_per_hour": 141.53923203207071,
+      "eager_rounds_per_hour": 207.90692501323625,
+      "delta_rounds_per_hour": -66.36769298116553,
+      "contestfl_elapsed_ms": 508692.88300000003,
+      "eager_elapsed_ms": 346308.811
+    },
+    {
+      "seed": 20261605,
+      "contestfl_success": true,
+      "eager_success": true,
+      "contestfl_completed": 20,
+      "eager_completed": 20,
+      "contestfl_rounds_per_hour": 146.96949723406775,
+      "eager_rounds_per_hour": 276.13158291221833,
+      "delta_rounds_per_hour": -129.1620856781506,
+      "contestfl_elapsed_ms": 489897.57300000003,
+      "eager_elapsed_ms": 260745.25499999998
+    }
+  ]
+}

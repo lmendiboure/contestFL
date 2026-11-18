@@ -1,144 +1,73 @@
-# ContestFL artifact
+# ContestFL
 
-This repository contains the implementation, evaluation harness, formal model,
-and reference outputs for ContestFL. It builds permissioned Hyperledger
-Besu/QBFT networks, deploys the protocol and comparison contracts, executes the
-fault and scaling campaigns, records transaction-level data, and regenerates
-publication figures and tables.
+ContestFL provides an accountable recovery mechanism for contested decisions in cross-organization federated learning. This repository includes the protocol evaluation contract, comparison implementations, the Hyperledger Besu/QBFT harness, a Flower integration, formal models and experiment analysis code.
 
 ## Requirements
 
-- Linux with Bash, GNU Make, and `unzip`;
-- Docker Engine with the Docker Compose plugin;
-- Python 3.10 or newer on the host;
-- Java 17 or newer for the TLA+/TLC checks;
-- at least 8 GiB of free disk space; more is recommended for the complete suite.
+- Ubuntu/Linux (x86-64), Bash, GNU Make, `unzip` and Python 3.10+.
+- Docker Engine with Compose v2 for on-chain experiments; a running Docker daemon accessible to the current user.
+- Internet access for the initial image builds and installation of `solc` 0.8.24.
+- Java 17+ for TLC model checking. The host-only source/reference checks do not require Java or Docker.
+- For full campaigns, allow at least 16 GiB RAM and 30 GiB free disk; workloads and runtime vary.
 
-The Python dependencies used by the experiments are installed in pinned Docker
-images. Host Python is used for orchestration, lightweight source/reference checks, environment capture, artifact assembly, and TLC-output parsing. Plot regeneration additionally uses NumPy, pandas, and Matplotlib; the Docker tools image supplies the pinned versions.
+The `.env.example` file contains isolated test-network defaults. **Do not expose the funded test chain or reuse its accounts on a production network.** If the default Docker subnets conflict with a local LAN or VPN, change the network settings in `.env` before starting.
 
-Check the host before running anything:
-
-```bash
-./scripts/preflight.sh
-```
-
-A source-only check that does not start Besu is available as:
+## Validate the source and retained reference data
 
 ```bash
 ./scripts/check_repository.sh
+# Tests and reference-integrity checks without launching Besu
+
+./review/run_review_suite.sh check
+# Adds local window analysis (model-based, not a new on-chain measurement)
 ```
 
-## Quick start
+These commands verify source syntax, tests, retained output integrity and bounded formal checks. Some unit tests skip optional Docker/Web3 dependencies. They do not replace an on-chain reproduction.
 
-The smoke suite checks the contracts, network, Flower path, authenticated-state
-path, off-chain tree code, and formal model with reduced repetitions:
+## Run a Besu smoke test
+
+```bash
+cp .env.example .env
+./scripts/preflight.sh
+./review/run_review_suite.sh smoke
+```
+
+The larger reviewer-oriented suite is:
+
+```bash
+BASE_RUN_ID=contestfl_revision ./review/run_review_suite.sh full
+```
+
+The full suite involves multiple Besu network restarts and can consume considerable time and disk. Each stage records logs and status; failures are not silently converted into successful runs. Review the outputs under `review_outputs/` before using any newly generated figure or claim. Consult [`docs/MAJOR_REVISION_RUNBOOK.md`](docs/MAJOR_REVISION_RUNBOOK.md) for the detailed stage descriptions.
+
+## Reproduce the retained original evaluation campaigns
 
 ```bash
 SUITE=smoke ./run_all_from_scratch.sh
-```
-
-The complete paper suite, including the watcher, bounded-capacity contention, authenticated-state, Flower, and formal checks, is:
-
-```bash
 SUITE=paper ./run_all_from_scratch.sh
 ```
 
-The runner creates `.env` from `.env.example` only when `.env` is absent. It
-never overwrites a local configuration. If the host interpreter has a
-non-standard name, set it explicitly:
+The original paper workflows cover the design comparisons, scaling, authenticated-state experiments, Flower integration, watcher measurements, controlled network-delay sensitivity and TLA+ checks. Detailed claim-to-command mappings are in [`ARTIFACT_EVALUATION.md`](ARTIFACT_EVALUATION.md). The retained historical results live in `results/reference/archives/` and `results/reference/summaries/`, with paper figures under `figures/reference/`. Do not conflate these historical reference measurements with the November campaign: the experiment configuration and instrumentation differ.
 
-```bash
-PYTHON_BIN=/path/to/python3 SUITE=paper ./run_all_from_scratch.sh
-```
+## Repository structure
 
-A completed suite produces a checksum-protected release:
+| Path | Content |
+|---|---|
+| `contracts/` | ContestFL evaluation contract and common-substrate alternatives |
+| `bench/` | Original blockchain benchmarking and analysis |
+| `review/` | Additional causal-recovery, flood, termination and multi-round experiments |
+| `ml/` | Flower/MNIST integration and checkpoint handling |
+| `formal/`, `supplementary/` | TLA+ / TLC and supporting formal analyses |
+| `tests/` | Source-level and unit tests |
+| `results/reference/` | Preserved earlier experiment outputs |
+| `evidence/revision_2026_11/` | Small, exact result tables and analyses from November 2026 |
+| `figures/reference/` | Figures from the original evaluation |
+| `tools/`, `scripts/` | Build, deployment, analysis and artifact utilities |
 
-```text
-artifacts/<UTC_ID>_<suite>/
-artifacts/<UTC_ID>_<suite>.zip
-```
+## Reproducibility and release data
 
-Runs can be resumed with the same base identifier:
+Start with [`ARTIFACT_RELEASE_2026_11.md`](ARTIFACT_RELEASE_2026_11.md) for evidence provenance, exact source hashes, and the separation between files committed here and the full experimental data archive. [`REVISION_2026_11_MANIFEST.json`](REVISION_2026_11_MANIFEST.json) is machine-readable. `
 
-```bash
-BASE_RUN_ID=<UTC_ID> RESUME=1 SUITE=paper ./run_all_from_scratch.sh
-```
+## License
 
-`SKIP_TLC=1` is available only for offline debugging. It must not be used for a
-paper artifact that reports TLC state counts.
-
-## Individual campaigns
-
-```bash
-./run_campaign.sh stable
-./run_competitor_extension.sh
-./run_targeted_extension.sh
-./run_root_only_ablation.sh
-./run_flower_mnist_e2e.sh
-./run_network_smoke.sh
-./run_smt_offchain.sh
-./run_root_depth_sensitivity.sh
-./formal/run_tlc.sh
-```
-
-The authenticated-state campaign compares per-client materialization with
-root-only commitments. The default root-only workloads are `clean`,
-`bad_admission`, and `bad_aggregate`. Flower exercises a deliberately incorrect
-aggregate checkpoint, a `REVISED` verdict, corrected republication, a renewed
-window, and finalization of the corrected checkpoint.
-
-## Reference outputs
-
-`results/reference/archives/` contains every retained result bundle available for the final paper, including raw per-run data where it was supplied. Directly inspectable summaries are under
-`results/reference/summaries/`. Publication-ready vector figures are under
-`figures/reference/`.
-
-See:
-
-- `ARTIFACT_EVALUATION.md` for the claim-to-command mapping;
-- `RESULTS.md` for verified reference values and interpretation limits;
-- `results/reference/README.md` for the bundle inventory;
-- `docs/` for campaign-specific methodology;
-- `supplementary/` and `formal/` for the proofs and TLA+ model.
-
-## Repository layout
-
-```text
-bench/          experiment drivers, adapters, and analyses
-contracts/      ContestFL and comparison contracts
-formal/         TLA+ specification, TLC configurations, parser, and launcher
-ml/             deterministic Flower/MNIST integration
-results/        immutable reference bundles; new runs are written to results/runs
-figures/        retained publication figures
-supplementary/  extended proofs and authenticated-state specification
-tests/          unit and source-level tests
-tools/          network, deployment, profiling, and artifact utilities
-```
-
-## Scope
-
-The comparison contracts represent architectural design points under the same
-workload and deployment; they are not line-by-line reproductions of named
-systems. The Flower experiment is an end-to-end applicability check rather than
-an accuracy, convergence, or throughput study. The controlled RTT experiment
-uses colocated validators and is a sensitivity check, not a geographically
-distributed QBFT benchmark.
-
-## Additional validation campaigns
-
-Two additional experiments used in the final evaluation are provided without changing the protocol contract:
-
-```bash
-./run_watcher_extension.sh
-./run_bounded_gas_contention.sh
-```
-
-The first collects 30 retained watcher measurements at approximately 100 and
-1,000 MiB and reports bootstrap confidence intervals. The second restarts Besu
-with a bounded block gas limit and measures whether an unsupported challenge
-burst delays a valid finalization transaction for an independent clean round.
-See [`docs/ADDITIONAL_CAMPAIGNS.md`](docs/ADDITIONAL_CAMPAIGNS.md) for
-scope, commands, outputs, interpretation limits, and watcher post-processing
-resume instructions.
-
+See [`LICENSE`](LICENSE).

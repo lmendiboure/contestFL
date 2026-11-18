@@ -199,7 +199,7 @@ run_integration_preflight() {
   make deploy
   make benchmark \
     VALIDATORS=4 CLIENTS="100" ROUNDS=1 WARMUP=0 \
-    SCENARIOS="concurrent_moot,correction_laundering,challenge_flooding" \
+    SCENARIOS="concurrent_moot,adversarial_moot_guard,correction_laundering,challenge_flooding" \
     RESULT_DIR="$preflight_dir" BATCH_SIZE="${BATCH_SIZE:-50}" \
     CHALLENGE_BLOCKS="${CHALLENGE_BLOCKS:-1}" RESPONSE_BLOCKS=16 \
     RETRY_BUDGET="${RETRY_BUDGET:-1}" UPDATE_DIM="${UPDATE_DIM:-1024}" \

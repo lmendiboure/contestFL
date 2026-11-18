@@ -39,3 +39,20 @@ three-key exhaustive model. Its original generator was not found in the supplied
 source archives. `validate_retained_dag.py` validates the retained table's schema
 and reported invariants but deliberately does not claim to reconstruct the
 missing state graph.
+
+## Dynamic-key review extension (October 2026)
+
+`dynamic_dependency_check.py` supplies a **new, independently executable**
+two-client bounded abstraction. Unlike the retained three-key table (whose
+generator was unavailable), this script regenerates its own state exploration
+and models the creation and deletion of INCLUDE keys as admission decisions
+change, with concurrent snapshot challenges and both shared and per-level
+retry accounting. It also constructs counterexamples when C1 is removed.
+
+```bash
+python3 formal/dynamic_dependency_check.py --output-dir results/runs/review_dynamic
+```
+
+The checker is automatically run by `run_auxiliary_checks.sh`. This is **not**
+a TLA+ checker or a refinement proof for Solidity. See
+`docs/REVIEWER_REVISION_ENGINEERING.md` for exact limitations.

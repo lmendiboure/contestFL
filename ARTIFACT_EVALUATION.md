@@ -39,6 +39,8 @@ must not use it.
 | Bounded block-capacity contention | `./run_bounded_gas_contention.sh` | `BOUNDED_GAS_CONTENTION_REPORT.md` |
 | Reduced lifecycle TLA+ model | `./formal/run_tlc.sh` | `TLC_RESULTS.md` |
 | Property-specific rule ablations | `./formal/run_auxiliary_checks.sh` | feature-ablation CSV/JSON |
+| Two-client dynamic-key / retry-bound exploration (review extension) | `./formal/run_auxiliary_checks.sh` | `dynamic_dependency/dynamic_dependency_results.json` |
+| Adversarial causal-MOOT bypass (Besu-only, stable preflight) | `./run_campaign.sh stable` | `adversarial_moot_guard` scenario and round status |
 | Retained result audit | `python3 tools/verify_reference_results.py` | `REFERENCE_CHECK_REPORT.*` |
 
 ## Success criteria

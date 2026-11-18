@@ -206,16 +206,16 @@ NETEM_JITTER_MS ?= 0
 NETEM_PROBE_CSV ?= results/manual/network_probe.csv
 
 netem-apply:
-	@tools/netem.sh apply $(VALIDATORS) $(NETEM_RTT_MS) $(NETEM_JITTER_MS)
+	@bash tools/netem.sh apply $(VALIDATORS) $(NETEM_RTT_MS) $(NETEM_JITTER_MS)
 
 netem-clear:
-	@tools/netem.sh clear $(VALIDATORS)
+	@bash tools/netem.sh clear $(VALIDATORS)
 
 netem-probe:
-	@tools/netem.sh probe $(VALIDATORS) $(NETEM_RTT_MS) $(NETEM_PROBE_CSV)
+	@bash tools/netem.sh probe $(VALIDATORS) $(NETEM_RTT_MS) $(NETEM_PROBE_CSV)
 
 netem-preflight:
-	@tools/netem.sh preflight $(VALIDATORS) $(NETEM_RTT_MS)
+	@bash tools/netem.sh preflight $(VALIDATORS) $(NETEM_RTT_MS)
 
 campaign-network-extension:
 	@./run_network_extension.sh
